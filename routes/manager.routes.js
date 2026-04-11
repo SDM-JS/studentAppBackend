@@ -114,4 +114,58 @@ managerRoutes.delete(
   managerController.deleteGroup,
 );
 
+// HOMEWORK BASED ROUTES
+managerRoutes.post(
+  "/api/homeworks",
+  authMiddleware,
+  managerController.createHomework,
+);
+managerRoutes.get(
+  "/api/homeworks",
+  authMiddleware,
+  managerController.getAllHomeworks,
+);
+managerRoutes.get(
+  "/api/homeworks/:homeworkId",
+  authMiddleware,
+  managerController.getSingleHomework,
+);
+managerRoutes.put(
+  "/api/homeworks/:homeworkId",
+  authMiddleware,
+  managerController.updateHomework,
+);
+managerRoutes.delete(
+  "/api/homeworks/:homeworkId",
+  authMiddleware,
+  managerController.deleteHomework,
+);
+
+// STUDENT ACTIVITY BASED ROUTES
+managerRoutes.post(
+  "/api/student-activities",
+  authMiddleware,
+  managerController.createStudentActivity,
+);
+managerRoutes.get(
+  "/api/student-activities",
+  authMiddleware,
+  managerController.getAllStudentActivities,
+);
+managerRoutes.get(
+  "/api/student-activities/:activityId",
+  authMiddleware,
+  managerController.getSingleStudentActivity,
+);
+managerRoutes.put(
+  "/api/student-activities/:activityId",
+  authMiddleware,
+  managerController.updateStudentActivity,
+);
+managerRoutes.delete(
+  "/api/student-activities/:activityId",
+  authMiddleware,
+  managerController.deleteStudentActivity,
+);
+
 export default managerRoutes;

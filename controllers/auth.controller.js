@@ -8,14 +8,7 @@ class AuthController {
     try {
       const { fullName, parentNumber, email, password, username, groupId } =
         req.body;
-      const fields = [
-        fullName,
-        parentNumber,
-        email,
-        password,
-        username,
-        groupId,
-      ];
+      const fields = [fullName, parentNumber, email, password, username];
       if (fields.some((field) => !field)) {
         return res.status(400).json({ error: "Please fill all the fileds!" });
       }
@@ -33,7 +26,7 @@ class AuthController {
           parentNumber,
           username,
           password: hashedPassword,
-          groupId,
+          groupId: groupId || undefined,
         },
       });
       return res.status(201).json({
@@ -57,7 +50,6 @@ class AuthController {
         where: { email },
       });
 
-      // Security tip: Use a generic message so attackers don't know the email exists
       if (!student) {
         return res.status(400).json({ error: "Invalid email or password!" });
       }
@@ -72,9 +64,9 @@ class AuthController {
 
       const token = jwt.sign(
         { userId: student.id, role: "admin" },
-        process.env.JWT_SECRET, // Use environment variable!
+        process.env.JWT_SECRET,
         {
-          expiresIn: "7d", // Use string format for clarity
+          expiresIn: "7d",
           algorithm: "HS512",
         },
       );
@@ -91,8 +83,8 @@ class AuthController {
           user: { id: student.id, email: student.email, token },
         });
     } catch (error) {
-      //   console.error(error); // Log first
-      next(error); // Then pass to global error handler
+      console.error(error); // Log first
+      // next(error); // Then pass to global error handler
     }
   }
 }

@@ -145,12 +145,12 @@ class Manager {
       }
       const { studentId } = req.params;
       if (!studentId) {
-        res.status(400).json({ error: "News Id is required!" });
-        throw BaseError.BadRequest("News Id is required!");
+        res.status(400).json({ error: "Student Id is required!" });
+        throw BaseError.BadRequest("Student Id is required!");
       }
       const updatedStudent = await prisma.student.update({
         where: {
-          id: newsId,
+          id: studentId,
         },
         data: {
           ...req.body,
@@ -444,26 +444,24 @@ class Manager {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
-      const fields = [
-        req.body.title,
-        req.body.description,
-        req.body.checked,
-        req.body.point,
-        req.body.deadline,
-        req.body.studentId,
-      ];
-      if (fields.some((field) => !field)) {
+      const fields = {
+        title: req.body.title,
+        description: req.body.description,
+        deadline: req.body.deadline,
+        studentId: req.body.studentId,
+      };
+      if (Object.values(fields).some((field) => field === undefined || field === "")) {
         return res.status(400).json({ error: "Please fill all the fileds!" });
       }
 
       const homework = await prisma.homework.create({
         data: {
-          studentId: fields[5],
-          title: fields[0],
-          description: fields[1],
-          checked: fields[2],
-          point: parseInt(fields[3]),
-          deadline: new Date(fields[4]),
+          studentId: fields.studentId,
+          title: fields.title,
+          description: fields.description,
+          checked: req.body.checked !== undefined ? req.body.checked : false,
+          point: req.body.point ? parseInt(req.body.point) : null,
+          deadline: new Date(fields.deadline),
         },
       });
       return res
@@ -475,42 +473,37 @@ class Manager {
   }
   async getAllHomeworks(req, res, next) {
     try {
-      const { role, id } = req.student;
+      const { role } = req.student;
       if (role !== "admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
-      const { studentId } = req.params;
-      const homework = await prisma.homework.findFirst({
-        where: {
-          studentId: studentId ? studentId : id,
-        },
+      const { studentId } = req.query;
+      const whereClause = studentId ? { studentId } : {};
+      const homeworks = await prisma.homework.findMany({
+        where: whereClause,
         include: {
           student: true,
           studentActivity: true,
         },
+        orderBy: { createdAt: "desc" },
       });
-      if (!homework) {
-        return res
-          .status(400)
-          .json({ error: "Homework with this student ID not found!" });
-      }
-      return res.status(200).json({ homework });
+      return res.status(200).json({ homeworks });
     } catch (error) {
       next(error);
     }
   }
   async getSingleHomework(req, res, next) {
     try {
-      const { role, id } = req.student;
+      const { role } = req.student;
       if (role !== "admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
-      const { studentId } = req.params;
+      const { homeworkId } = req.params;
       const homework = await prisma.homework.findFirst({
         where: {
-          studentId: studentId ? studentId : id,
+          id: homeworkId,
         },
         include: {
           student: true,
@@ -520,61 +513,164 @@ class Manager {
       if (!homework) {
         return res
           .status(400)
-          .json({ error: "Homework with this student ID not found!" });
+          .json({ error: "Homework with this ID not found!" });
       }
       return res.status(200).json({ homework });
     } catch (error) {
       next(error);
     }
   }
-  async updateGroup(req, res, next) {
+  async updateHomework(req, res, next) {
     try {
       const { role } = req.student;
       if (role !== "admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
-      const { groupId } = req.params;
-      if (!groupId) {
-        return res.status(400).json({ error: "Group ID is required!" });
+      const { homeworkId } = req.params;
+      if (!homeworkId) {
+        return res.status(400).json({ error: "Homework ID is required!" });
       }
-      const group = await prisma.group.update({
-        where: {
-          id: groupId,
-        },
-        data: {
-          ...req.body,
-        },
+      
+      const { deadline, point, ...rest } = req.body;
+      const updateData = { ...rest };
+      if (deadline) updateData.deadline = new Date(deadline);
+      if (point !== undefined) updateData.point = parseInt(point);
+      
+      const homework = await prisma.homework.update({
+        where: { id: homeworkId },
+        data: updateData,
       });
-      if (!group) {
-        return res
-          .status(400)
-          .json({ error: "Course with this ID not found!" });
-      }
+      return res.status(200).json({ message: "Homework updated successfully!", homework });
     } catch (error) {
       next(error);
     }
   }
-  async deleteGroup(req, res, next) {
+  async deleteHomework(req, res, next) {
     try {
       const { role } = req.student;
       if (role !== "admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
-      const { groupId } = req.params;
-      if (!groupId) {
-        return res.status(400).json({ error: "Group Id is required!" });
+      const { homeworkId } = req.params;
+      if (!homeworkId) {
+        return res.status(400).json({ error: "Homework ID is required!" });
       }
-      const group = await prisma.group.delete({
-        where: {
-          id: groupId,
+      await prisma.homework.delete({
+        where: { id: homeworkId },
+      });
+      return res.status(200).json({ message: "Homework deleted successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  // StudentActivity Functions
+  async createStudentActivity(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { studentId, rating } = req.body;
+      if (!studentId || !rating) {
+        return res.status(400).json({ error: "Please fill all required fields!" });
+      }
+      const studentActivity = await prisma.studentActivity.create({
+        data: {
+          studentId,
+          rating,
         },
       });
-      if (!group) {
-        return res.status(400).json({ error: "Group with this ID not found!" });
+      return res.status(201).json({ message: "StudentActivity created successfully!", studentActivity });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getAllStudentActivities(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
       }
-      return res.status(200).json({ message: "Group deleted successfully!" });
+      const { studentId } = req.query;
+      const whereClause = studentId ? { studentId } : {};
+      const studentActivities = await prisma.studentActivity.findMany({
+        where: whereClause,
+        include: {
+          student: true,
+          tasks: true,
+        },
+        orderBy: { createdAt: "desc" },
+      });
+      return res.status(200).json({ studentActivities });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getSingleStudentActivity(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { activityId } = req.params;
+      const studentActivity = await prisma.studentActivity.findFirst({
+        where: { id: activityId },
+        include: {
+          student: true,
+          tasks: true,
+        },
+      });
+      if (!studentActivity) {
+        return res.status(400).json({ error: "StudentActivity not found!" });
+      }
+      return res.status(200).json({ studentActivity });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updateStudentActivity(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { activityId } = req.params;
+      if (!activityId) {
+        return res.status(400).json({ error: "Activity ID is required!" });
+      }
+      const studentActivity = await prisma.studentActivity.update({
+        where: { id: activityId },
+        data: {
+          ...req.body,
+        },
+      });
+      return res.status(200).json({ message: "StudentActivity updated successfully!", studentActivity });
+    } catch (error) {
+      next(error);
+    }
+  }
+  async deleteStudentActivity(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { activityId } = req.params;
+      if (!activityId) {
+        return res.status(400).json({ error: "Activity ID is required!" });
+      }
+      await prisma.studentActivity.delete({
+        where: { id: activityId },
+      });
+      return res.status(200).json({ message: "StudentActivity deleted successfully!" });
     } catch (error) {
       next(error);
     }

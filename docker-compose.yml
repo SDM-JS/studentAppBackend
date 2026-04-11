@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: bitsoft-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: bitsoft
+    ports:
+      - "5432:5432"
+    volumes:
+      - bitsoft_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    # Healthcheck ensures the app waits until DB is completely ready to accept connections
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bitsoft"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bitsoft-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Overrides the DATABASE_URL in .env to use the internal docker-compose postgres network
+      - DATABASE_URL=postgresql://postgres:admin@db:5432/bitsoft?schema=public
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    # By running 'migrate deploy' before starting, we make sure production schema is always synced
+    command: /bin/sh -c "pnpm dlx prisma migrate deploy && pnpm start"
+
+volumes:
+  bitsoft_db_data:
