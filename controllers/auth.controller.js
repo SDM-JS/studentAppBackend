@@ -80,7 +80,7 @@ class AuthController {
         .json({
           success: true,
           message: "Login successful",
-          user: { id: student.id, email: student.email, token },
+          user: { id: student.id, email: student.email },
         });
     } catch (error) {
       console.error(error); // Log first
