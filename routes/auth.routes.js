@@ -9,6 +9,7 @@ router.post("/api/sign-up", authController.signUp);
 router.post("/api/login", authController.login);
 
 router.post("/api/login/admin", authController.adminLogin);
-router.post("/api/sign-up/admin");
+
+router.post("/api/sign-up/admin", authController.adminSignUp);
 
 export default router;
