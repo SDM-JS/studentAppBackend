@@ -6,6 +6,8 @@ const managerRoutes = express.Router();
 
 managerRoutes.post("/api/news", authMiddleware, managerController.createNews);
 
+managerRoutes.get("/api/me", authMiddleware, managerController.getInfo);
+
 managerRoutes.get(
   "/api/get-all-news",
   authMiddleware,

@@ -25,6 +25,24 @@ class Manager {
       // next(error);
     }
   }
+  async getInfo(req, res, next) {
+    try {
+      const { id } = req.student;
+      const student = await prisma.student.findFirst({
+        where: {
+          id,
+        },
+        include: {
+          group: true,
+          homework: true,
+          studentActivities: true,
+        },
+      });
+      return res.json(student);
+    } catch (error) {
+      next(error);
+    }
+  }
   async getAllNews(req, res, next) {
     try {
       const allNews = await prisma.news.findMany();
