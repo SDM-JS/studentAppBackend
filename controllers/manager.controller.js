@@ -14,6 +14,7 @@ class Manager {
           title,
           description,
           pictureUrl: req.body.pictureUrl ? req.body.pictureUrl : "",
+          videoId: req.body.videoId ? req.body.videoId : "",
         },
       });
       return res.status(201).json(news);
@@ -450,7 +451,11 @@ class Manager {
         deadline: req.body.deadline,
         studentId: req.body.studentId,
       };
-      if (Object.values(fields).some((field) => field === undefined || field === "")) {
+      if (
+        Object.values(fields).some(
+          (field) => field === undefined || field === "",
+        )
+      ) {
         return res.status(400).json({ error: "Please fill all the fileds!" });
       }
 
@@ -531,17 +536,19 @@ class Manager {
       if (!homeworkId) {
         return res.status(400).json({ error: "Homework ID is required!" });
       }
-      
+
       const { deadline, point, ...rest } = req.body;
       const updateData = { ...rest };
       if (deadline) updateData.deadline = new Date(deadline);
       if (point !== undefined) updateData.point = parseInt(point);
-      
+
       const homework = await prisma.homework.update({
         where: { id: homeworkId },
         data: updateData,
       });
-      return res.status(200).json({ message: "Homework updated successfully!", homework });
+      return res
+        .status(200)
+        .json({ message: "Homework updated successfully!", homework });
     } catch (error) {
       next(error);
     }
@@ -560,12 +567,14 @@ class Manager {
       await prisma.homework.delete({
         where: { id: homeworkId },
       });
-      return res.status(200).json({ message: "Homework deleted successfully!" });
+      return res
+        .status(200)
+        .json({ message: "Homework deleted successfully!" });
     } catch (error) {
       next(error);
     }
   }
-  
+
   // StudentActivity Functions
   async createStudentActivity(req, res, next) {
     try {
@@ -576,7 +585,9 @@ class Manager {
       }
       const { studentId, rating } = req.body;
       if (!studentId || !rating) {
-        return res.status(400).json({ error: "Please fill all required fields!" });
+        return res
+          .status(400)
+          .json({ error: "Please fill all required fields!" });
       }
       const studentActivity = await prisma.studentActivity.create({
         data: {
@@ -584,7 +595,12 @@ class Manager {
           rating,
         },
       });
-      return res.status(201).json({ message: "StudentActivity created successfully!", studentActivity });
+      return res
+        .status(201)
+        .json({
+          message: "StudentActivity created successfully!",
+          studentActivity,
+        });
     } catch (error) {
       next(error);
     }
@@ -651,7 +667,12 @@ class Manager {
           ...req.body,
         },
       });
-      return res.status(200).json({ message: "StudentActivity updated successfully!", studentActivity });
+      return res
+        .status(200)
+        .json({
+          message: "StudentActivity updated successfully!",
+          studentActivity,
+        });
     } catch (error) {
       next(error);
     }
@@ -670,7 +691,9 @@ class Manager {
       await prisma.studentActivity.delete({
         where: { id: activityId },
       });
-      return res.status(200).json({ message: "StudentActivity deleted successfully!" });
+      return res
+        .status(200)
+        .json({ message: "StudentActivity deleted successfully!" });
     } catch (error) {
       next(error);
     }
