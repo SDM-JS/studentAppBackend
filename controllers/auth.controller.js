@@ -95,7 +95,7 @@ class AuthController {
         return res.status(400).json({ error: "Please fill all the fields!" });
       }
 
-      const admin = await prisma.student.findFirst({
+      const admin = await prisma.admin.findFirst({
         where: { email },
       });
 
@@ -109,7 +109,7 @@ class AuthController {
       }
 
       const token = jwt.sign(
-        { userId: admin.id, role: "admin" },
+        { userId: admin.id, role: "org::admin" },
         process.env.JWT_SECRET,
         {
           expiresIn: "7d",
@@ -131,6 +131,35 @@ class AuthController {
     } catch (error) {
       // console.error(error); // Log first
       next(error); // Then pass to global error handler
+    }
+  }
+  async adminSignUp(req, res, next) {
+    try {
+      const { email, password } = req.body;
+      const fields = [email, password];
+      if (fields.some((field) => !field)) {
+        return res.status(400).json({ error: "Please fill all the fileds!" });
+      }
+      if (password.length < 6) {
+        return res
+          .status(400)
+          .json({ error: "Password must be more than 6 characters long!" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const newAdmin = await prisma.admin.create({
+        data: {
+          email,
+          password: hashedPassword,
+        },
+      });
+      return res.status(201).json({
+        message: "Admin created successfully",
+        student: newAdmin,
+      });
+    } catch (error) {
+      next(error);
+      //   console.log(error);
     }
   }
 }

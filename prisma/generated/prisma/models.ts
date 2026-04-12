@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Student.ts'
+export type * from './models/Admin.ts'
 export type * from './models/News.ts'
 export type * from './models/Group.ts'
 export type * from './models/Course.ts'

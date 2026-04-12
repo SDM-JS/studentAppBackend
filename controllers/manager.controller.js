@@ -5,7 +5,8 @@ class Manager {
     try {
       const { title, description } = req.body;
       const { role } = req.student;
-      if (role !== "admin") {
+
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -13,19 +14,20 @@ class Manager {
         data: {
           title,
           description,
-          pictureUrl: req.body.pictureUrl ? req.body.pictureUrl : "",
-          videoId: req.body.videoId ? req.body.videoId : "",
+          pictureUrl: req.body.pictureUrl || "",
+          videoId: req.body.videoId || "",
         },
       });
       return res.status(201).json(news);
     } catch (error) {
-      next(error);
+      console.log(error);
+      // next(error);
     }
   }
   async getAllNews(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -51,7 +53,7 @@ class Manager {
   async deleteNews(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -73,7 +75,7 @@ class Manager {
   async updateNews(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -101,7 +103,7 @@ class Manager {
   async getAllStudents(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -118,7 +120,7 @@ class Manager {
   async deleteStudent(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -140,7 +142,7 @@ class Manager {
   async updateStudent(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -167,7 +169,7 @@ class Manager {
   async getSingleStudent(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -196,7 +198,7 @@ class Manager {
     try {
       const { name, description } = req.body;
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -220,7 +222,7 @@ class Manager {
   async getAllCourses(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -235,7 +237,7 @@ class Manager {
   async getSingleCourse(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -265,7 +267,7 @@ class Manager {
   async deleteCourse(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -291,7 +293,7 @@ class Manager {
   async updateCourse(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -321,7 +323,7 @@ class Manager {
   async createGroup(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -347,7 +349,7 @@ class Manager {
   async getAllGroups(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -360,7 +362,7 @@ class Manager {
   async getSingleGroup(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -388,7 +390,7 @@ class Manager {
   async updateGroup(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -416,7 +418,7 @@ class Manager {
   async deleteGroup(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -441,7 +443,7 @@ class Manager {
   async createHomework(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -479,7 +481,7 @@ class Manager {
   async getAllHomeworks(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -501,7 +503,7 @@ class Manager {
   async getSingleHomework(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -528,7 +530,7 @@ class Manager {
   async updateHomework(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -556,7 +558,7 @@ class Manager {
   async deleteHomework(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -579,7 +581,7 @@ class Manager {
   async createStudentActivity(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -595,12 +597,10 @@ class Manager {
           rating,
         },
       });
-      return res
-        .status(201)
-        .json({
-          message: "StudentActivity created successfully!",
-          studentActivity,
-        });
+      return res.status(201).json({
+        message: "StudentActivity created successfully!",
+        studentActivity,
+      });
     } catch (error) {
       next(error);
     }
@@ -608,7 +608,7 @@ class Manager {
   async getAllStudentActivities(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -630,7 +630,7 @@ class Manager {
   async getSingleStudentActivity(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -653,7 +653,7 @@ class Manager {
   async updateStudentActivity(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }
@@ -667,12 +667,10 @@ class Manager {
           ...req.body,
         },
       });
-      return res
-        .status(200)
-        .json({
-          message: "StudentActivity updated successfully!",
-          studentActivity,
-        });
+      return res.status(200).json({
+        message: "StudentActivity updated successfully!",
+        studentActivity,
+      });
     } catch (error) {
       next(error);
     }
@@ -680,7 +678,7 @@ class Manager {
   async deleteStudentActivity(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "admin") {
+      if (role !== "org::admin") {
         res.status(403).json({ error: "Forbidden" });
         throw BaseError.Forbidden();
       }

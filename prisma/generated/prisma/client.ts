@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type Student = Prisma.StudentModel
 /**
+ * Model Admin
+ * 
+ */
+export type Admin = Prisma.AdminModel
+/**
  * Model News
  * 
  */

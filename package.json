@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon main.js",
     "migrate": "prisma migrate dev && prisma generate",
-    "start": "node main.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",

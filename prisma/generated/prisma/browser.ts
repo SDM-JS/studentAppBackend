@@ -23,6 +23,11 @@ export * from './enums.ts';
  */
 export type Student = Prisma.StudentModel
 /**
+ * Model Admin
+ * 
+ */
+export type Admin = Prisma.AdminModel
+/**
  * Model News
  * 
  */
