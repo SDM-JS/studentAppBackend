@@ -63,7 +63,7 @@ class AuthController {
       }
 
       const token = jwt.sign(
-        { userId: student.id, role: "admin" },
+        { userId: student.id, role: "student" },
         process.env.JWT_SECRET,
         {
           expiresIn: "7d",
@@ -85,6 +85,52 @@ class AuthController {
     } catch (error) {
       console.error(error); // Log first
       // next(error); // Then pass to global error handler
+    }
+  }
+  async adminLogin(req, res, next) {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ error: "Please fill all the fields!" });
+      }
+
+      const admin = await prisma.student.findFirst({
+        where: { email },
+      });
+
+      if (!admin) {
+        return res.status(400).json({ error: "Invalid email or password!" });
+      }
+
+      const isCorrectPassword = await bcrypt.compare(password, admin.password);
+      if (!isCorrectPassword) {
+        return res.status(400).json({ error: "Invalid email or password!" });
+      }
+
+      const token = jwt.sign(
+        { userId: admin.id, role: "admin" },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "7d",
+          algorithm: "HS512",
+        },
+      );
+      return res
+        .cookie("usr-session", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        .status(200)
+        .json({
+          success: true,
+          message: "Login successful",
+          user: { id: admin.id, email: admin.email },
+        });
+    } catch (error) {
+      // console.error(error); // Log first
+      next(error); // Then pass to global error handler
     }
   }
 }
