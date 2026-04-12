@@ -70,18 +70,12 @@ class AuthController {
           algorithm: "HS512",
         },
       );
-      return res
-        .cookie("usr-session", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        })
-        .status(200)
-        .json({
-          success: true,
-          message: "Login successful",
-          user: { id: student.id, email: student.email },
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Login successful",
+        user: { id: student.id, email: student.email },
+        token,
+      });
     } catch (error) {
       console.error(error); // Log first
       // next(error); // Then pass to global error handler
@@ -116,18 +110,12 @@ class AuthController {
           algorithm: "HS512",
         },
       );
-      return res
-        .cookie("usr-session", token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        })
-        .status(200)
-        .json({
-          success: true,
-          message: "Login successful",
-          user: { id: admin.id, email: admin.email },
-        });
+      return res.status(200).json({
+        success: true,
+        message: "Login successful",
+        user: { id: admin.id, email: admin.email },
+        token,
+      });
     } catch (error) {
       // console.error(error); // Log first
       next(error); // Then pass to global error handler
