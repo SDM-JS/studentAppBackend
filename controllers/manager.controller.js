@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma.js";
 class Manager {
   async createNews(req, res, next) {
     try {
+      console.log("Salom23");
       const { title, description } = req.body;
       const { role } = req.student;
 

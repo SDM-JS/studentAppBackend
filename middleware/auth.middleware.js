@@ -5,30 +5,26 @@ import { prisma } from "../lib/prisma.js";
 
 export default async function (req, res, next) {
   try {
-    const authorization = req.headers.authorization;
-    console.log("salom1");
+    const { authorization } = req.headers;
 
     if (!authorization) {
       return next(BaseError.Unauthorized());
     }
     const token = authorization.split(" ")[1];
-    console.log("salom2");
 
     if (!token) {
       return next(BaseError.Unauthorized());
     }
     const { userId, role } = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("salom3");
 
     if (!userId) {
       return next(BaseError.Unauthorized());
     }
-    const query = await prisma.student.findFirst({
+    const query = await prisma.admin.findFirst({
       where: {
         id: userId,
       },
     });
-    console.log("salom4");
     const student = {
       fullName: query.fullName,
       id: query.id,
