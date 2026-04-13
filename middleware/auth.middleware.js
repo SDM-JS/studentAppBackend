@@ -25,14 +25,31 @@ export default async function (req, res, next) {
         id: userId,
       },
     });
-    const student = {
-      fullName: query.fullName,
-      id: query.id,
-      email: query.email,
-      parentNumber: query.parentNumber,
-      username: query.username,
-      role,
-    };
+    const studentQuery = await prisma.student.findFirst({
+      where: {
+        id: userId,
+      },
+    });
+    let student;
+    if (query) {
+      student = {
+        fullName: query.fullName,
+        id: query.id,
+        email: query.email,
+        parentNumber: query.parentNumber,
+        username: query.username,
+        role,
+      };
+    }
+    if (studentQuery) {
+      student = {
+        fullName: studentQuery.fullName,
+        id: studentQuery.id,
+        email: studentQuery.email,
+        phoneNumber: studentQuery.phoneNumber,
+        role,
+      };
+    }
     if (!student) {
       return next(BaseError.Unauthorized());
     }
