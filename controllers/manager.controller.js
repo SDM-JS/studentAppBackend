@@ -3,7 +3,6 @@ import { prisma } from "../lib/prisma.js";
 class Manager {
   async createNews(req, res, next) {
     try {
-      console.log("Salom23");
       const { title, description } = req.body;
       const { role } = req.student;
 
@@ -17,6 +16,7 @@ class Manager {
           description,
           pictureUrl: req.body.pictureUrl || "",
           videoId: req.body.videoId || "",
+          url: req.body.url || "",
         },
       });
       return res.status(201).json(news);

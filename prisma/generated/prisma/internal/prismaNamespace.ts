@@ -1000,7 +1000,8 @@ export const NewsScalarFieldEnum = {
   pictureUrl: 'pictureUrl',
   videoId: 'videoId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  url: 'url'
 } as const
 
 export type NewsScalarFieldEnum = (typeof NewsScalarFieldEnum)[keyof typeof NewsScalarFieldEnum]

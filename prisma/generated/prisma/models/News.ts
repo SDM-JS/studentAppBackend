@@ -32,6 +32,7 @@ export type NewsMinAggregateOutputType = {
   videoId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  url: string | null
 }
 
 export type NewsMaxAggregateOutputType = {
@@ -42,6 +43,7 @@ export type NewsMaxAggregateOutputType = {
   videoId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  url: string | null
 }
 
 export type NewsCountAggregateOutputType = {
@@ -52,6 +54,7 @@ export type NewsCountAggregateOutputType = {
   videoId: number
   createdAt: number
   updatedAt: number
+  url: number
   _all: number
 }
 
@@ -64,6 +67,7 @@ export type NewsMinAggregateInputType = {
   videoId?: true
   createdAt?: true
   updatedAt?: true
+  url?: true
 }
 
 export type NewsMaxAggregateInputType = {
@@ -74,6 +78,7 @@ export type NewsMaxAggregateInputType = {
   videoId?: true
   createdAt?: true
   updatedAt?: true
+  url?: true
 }
 
 export type NewsCountAggregateInputType = {
@@ -84,6 +89,7 @@ export type NewsCountAggregateInputType = {
   videoId?: true
   createdAt?: true
   updatedAt?: true
+  url?: true
   _all?: true
 }
 
@@ -167,6 +173,7 @@ export type NewsGroupByOutputType = {
   videoId: string | null
   createdAt: Date
   updatedAt: Date
+  url: string | null
   _count: NewsCountAggregateOutputType | null
   _min: NewsMinAggregateOutputType | null
   _max: NewsMaxAggregateOutputType | null
@@ -198,6 +205,7 @@ export type NewsWhereInput = {
   videoId?: Prisma.StringNullableFilter<"News"> | string | null
   createdAt?: Prisma.DateTimeFilter<"News"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"News"> | Date | string
+  url?: Prisma.StringNullableFilter<"News"> | string | null
 }
 
 export type NewsOrderByWithRelationInput = {
@@ -208,6 +216,7 @@ export type NewsOrderByWithRelationInput = {
   videoId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  url?: Prisma.SortOrderInput | Prisma.SortOrder
 }
 
 export type NewsWhereUniqueInput = Prisma.AtLeast<{
@@ -221,6 +230,7 @@ export type NewsWhereUniqueInput = Prisma.AtLeast<{
   videoId?: Prisma.StringNullableFilter<"News"> | string | null
   createdAt?: Prisma.DateTimeFilter<"News"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"News"> | Date | string
+  url?: Prisma.StringNullableFilter<"News"> | string | null
 }, "id">
 
 export type NewsOrderByWithAggregationInput = {
@@ -231,6 +241,7 @@ export type NewsOrderByWithAggregationInput = {
   videoId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  url?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.NewsCountOrderByAggregateInput
   _max?: Prisma.NewsMaxOrderByAggregateInput
   _min?: Prisma.NewsMinOrderByAggregateInput
@@ -247,6 +258,7 @@ export type NewsScalarWhereWithAggregatesInput = {
   videoId?: Prisma.StringNullableWithAggregatesFilter<"News"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"News"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"News"> | Date | string
+  url?: Prisma.StringNullableWithAggregatesFilter<"News"> | string | null
 }
 
 export type NewsCreateInput = {
@@ -257,6 +269,7 @@ export type NewsCreateInput = {
   videoId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  url?: string | null
 }
 
 export type NewsUncheckedCreateInput = {
@@ -267,6 +280,7 @@ export type NewsUncheckedCreateInput = {
   videoId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  url?: string | null
 }
 
 export type NewsUpdateInput = {
@@ -277,6 +291,7 @@ export type NewsUpdateInput = {
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsUncheckedUpdateInput = {
@@ -287,6 +302,7 @@ export type NewsUncheckedUpdateInput = {
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsCreateManyInput = {
@@ -297,6 +313,7 @@ export type NewsCreateManyInput = {
   videoId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  url?: string | null
 }
 
 export type NewsUpdateManyMutationInput = {
@@ -307,6 +324,7 @@ export type NewsUpdateManyMutationInput = {
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsUncheckedUpdateManyInput = {
@@ -317,6 +335,7 @@ export type NewsUncheckedUpdateManyInput = {
   videoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type NewsCountOrderByAggregateInput = {
@@ -327,6 +346,7 @@ export type NewsCountOrderByAggregateInput = {
   videoId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  url?: Prisma.SortOrder
 }
 
 export type NewsMaxOrderByAggregateInput = {
@@ -337,6 +357,7 @@ export type NewsMaxOrderByAggregateInput = {
   videoId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  url?: Prisma.SortOrder
 }
 
 export type NewsMinOrderByAggregateInput = {
@@ -347,6 +368,7 @@ export type NewsMinOrderByAggregateInput = {
   videoId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  url?: Prisma.SortOrder
 }
 
 
@@ -359,6 +381,7 @@ export type NewsSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   videoId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  url?: boolean
 }, ExtArgs["result"]["news"]>
 
 export type NewsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -369,6 +392,7 @@ export type NewsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   videoId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  url?: boolean
 }, ExtArgs["result"]["news"]>
 
 export type NewsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -379,6 +403,7 @@ export type NewsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   videoId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  url?: boolean
 }, ExtArgs["result"]["news"]>
 
 export type NewsSelectScalar = {
@@ -389,9 +414,10 @@ export type NewsSelectScalar = {
   videoId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  url?: boolean
 }
 
-export type NewsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "pictureUrl" | "videoId" | "createdAt" | "updatedAt", ExtArgs["result"]["news"]>
+export type NewsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "pictureUrl" | "videoId" | "createdAt" | "updatedAt" | "url", ExtArgs["result"]["news"]>
 
 export type $NewsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "News"
@@ -404,6 +430,7 @@ export type $NewsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     videoId: string | null
     createdAt: Date
     updatedAt: Date
+    url: string | null
   }, ExtArgs["result"]["news"]>
   composites: {}
 }
@@ -834,6 +861,7 @@ export interface NewsFieldRefs {
   readonly videoId: Prisma.FieldRef<"News", 'String'>
   readonly createdAt: Prisma.FieldRef<"News", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"News", 'DateTime'>
+  readonly url: Prisma.FieldRef<"News", 'String'>
 }
     
 
