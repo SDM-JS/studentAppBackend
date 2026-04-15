@@ -66,7 +66,7 @@ class AuthController {
         { userId: student.id, role: "student" },
         process.env.JWT_SECRET,
         {
-          expiresIn: "7d",
+          expiresIn: "365d",
           algorithm: "HS512",
         },
       );
@@ -106,7 +106,7 @@ class AuthController {
         { userId: admin.id, role: "org::admin" },
         process.env.JWT_SECRET,
         {
-          expiresIn: "7d",
+          expiresIn: "365d",
           algorithm: "HS512",
         },
       );
