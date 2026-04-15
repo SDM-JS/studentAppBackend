@@ -14,6 +14,9 @@ app.use(
     origin: "*",
   }),
 );
+app.get("/healthxyz", (req, res) => {
+  return res.status(200).json({ message: "Running", time: new Date() });
+});
 app.use(express.json());
 app.use(router);
 app.use(managerRoutes);
