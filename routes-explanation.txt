@@ -1,158 +1,136 @@
-# Bitsoft App API Routes Configuration
+# Bitsoft App API Documentation
 
-This document outlines all the available REST API routes in the Bitsoft application, their descriptions, and the required parameters or body fields for each.
-
-## Authentication Routes (Public)
-These routes are defined in `routes/auth.routes.js` and do not require authentication.
-
-### `POST /api/sign-up`
-- **Description:** Register a new student user in the system.
-- **Required Body Fields:** 
-  - `fullName` (string)
-  - `parentNumber` (string)
-  - `email` (string)
-  - `password` (string, minimum 6 characters)
-  - `username` (string)
-- **Optional Body Fields:**
-  - `groupId` (string)
-
-### `POST /api/login`
-- **Description:** Authenticate an existing user and return an HTTP-only cookie with a JWT token.
-- **Required Body Fields:** 
-  - `email` (string)
-  - `password` (string)
+This document provides a comprehensive guide to the Bitsoft App REST API. All protected routes require a `Bearer <token>` in the `Authorization` header.
 
 ---
 
-## Manager / Application Routes (Protected)
-These routes are defined in `routes/manager.routes.js` and require a valid token (applied via `authMiddleware`). Generally, standard users cannot access these routes since the controllers explicitly check for `role === "admin"`.
+## 🔐 Authentication (Public)
+These endpoints are used for user registration and login.
 
-### News
-#### `POST /api/news`
-- **Description:** Create a new news entry.
-- **Required Body Fields:** `title`, `description`
-- **Optional Body Fields:** `pictureUrl` (defaults to empty string)
+### Register Student
+`POST /api/sign-up`
+- **Description:** Registers a new student account.
+- **Required Body:**
+  - `fullName` (String): Full name of the student.
+  - `email` (String): Unique email address.
+  - `password` (String): Min 6 characters.
+  - `username` (String): Unique username.
+  - `parentNumber` (String): Contact number for the parent.
+- **Optional Body:**
+  - `groupId` (String): ID of the group the student belongs to.
 
-#### `GET /api/get-all-news`
-- **Description:** Retrieve all news entries in the database.
-- **Requirements:** None
+### Login Student
+`POST /api/login`
+- **Description:** Authenticates a student and returns a JWT token.
+- **Required Body:**
+  - `email` (String)
+  - `password` (String)
 
-#### `GET /api/get-latest-news`
-- **Description:** Retrieve the single most recently created news entry.
-- **Requirements:** None
+### Login Admin
+`POST /api/login/admin`
+- **Description:** Authenticates an admin/manager.
+- **Required Body:**
+  - `email` (String)
+  - `password` (String)
 
-#### `PUT /api/news/:newsId`
-- **Description:** Update a specific news entry by ID.
-- **Required Path Params:** `newsId`
-- **Optional Body Fields:** Any fields of the News model (`title`, `description`, `pictureUrl`) you wish to update.
+### Register Admin
+`POST /api/sign-up/admin`
+- **Description:** Registers a new administrative account.
+- **Required Body:**
+  - `email` (String)
+  - `password` (String)
 
-#### `DELETE /api/news/:newsId`
-- **Description:** Delete a specific news entry by ID.
-- **Required Path Params:** `newsId`
+---
 
+## 📝 Quiz & Daily Tests (Protected)
+Managed via `TestController`. Designed for daily performance tracking.
+
+### Create Batch Tests (Admin Only)
+`POST /api/tests/batch`
+- **Description:** Schedules tests for multiple dates.
+- **Required Body:**
+  - `tests` (Array of Tests):
+    - `title` (String)
+    - `scheduledDate` (Date String - e.g., "2024-04-16")
+    - `questions` (Array of Questions):
+      - `text` (String): The question body.
+      - `points` (Number): Points awarded for correct answer.
+      - `options` (Array of Strings): Answer choices.
+      - `answer` (String): The correct option matching one entry in `options`.
+
+### Get Today's Test
+`GET /api/tests/daily`
+- **Description:** Fetches the test scheduled for today.
+- **Access:** Student / Admin
+- **Returns:** Test structure with questions. Includes `submitted: true/false`.
+
+### Submit Test Answers
+`POST /api/tests/submit`
+- **Description:** Submits student answers and calculates the final score.
+- **Required Body:**
+  - `testId` (String): ID of the test being submitted.
+  - `answers` (Object): Map of Question IDs to selected options.
+    - Example: `{ "question_id_1": "Paris", "question_id_2": "10" }`
+- **Access:** Student (One submission per test per student).
+
+### Leaderboard / Ratings
+`GET /api/tests/leaderboard`
+- **Description:** Returns the ranking of best students based on total quiz points earned.
+- **Access:** All Authenticated Users
+
+---
+
+## 📰 News Management (Admin)
+### Create News
+`POST /api/news`
+- **Required Body:** `title`, `description`
+- **Optional Body:** `pictureUrl`, `videoId`, `url`
+
+### Get All News
+`GET /api/get-all-news` | `GET /api/get-latest-news`
+
+### Update/Delete News
+`PUT /api/news/:newsId` | `DELETE /api/news/:newsId`
+
+---
+
+## 👥 Student & Group Management (Admin)
 ### Students
-#### `GET /api/students`
-- **Description:** Retrieve all registered students, ordered by creation date (descending).
-- **Requirements:** None
-
-#### `GET /api/students/:studentId`
-- **Description:** Retrieve the details of a specific student by their ID.
-- **Required Path Params:** `studentId`
-
-#### `PUT /api/students/:studentId`
-- **Description:** Update a specific student by their ID.
-- **Required Path Params:** `studentId`
-- **Optional Body Fields:** Any student field you wish to update (`fullName`, `email`, `password`, `groupId`, etc.).
-
-#### `DELETE /api/students/:studentId`
-- **Description:** Safely delete a specific student by their ID.
-- **Required Path Params:** `studentId`
-
-### Courses
-#### `POST /api/courses`
-- **Description:** Create a new course offering.
-- **Required Body Fields:** `name`, `description`
-
-#### `GET /api/courses`
-- **Description:** Retrieve all previously created courses ordered by newest first.
-- **Requirements:** None
-
-#### `GET /api/courses/:courseId`
-- **Description:** Retrieve a specific course by its ID. Includes the `groups` that are tied to this course.
-- **Required Path Params:** `courseId`
-
-#### `PUT /api/courses/:courseId`
-- **Description:** Update an existing course by ID.
-- **Required Path Params:** `courseId`
-- **Optional Body Fields:** `name`, `description`
-
-#### `DELETE /api/courses/:courseId`
-- **Description:** Delete a specific course by its ID.
-- **Required Path Params:** `courseId`
+- `GET /api/students`: Get all students.
+- `GET /api/students/:studentId`: Get detailed profile.
+- `PUT /api/students/:studentId`: Update profile.
+- `DELETE /api/students/:studentId`: Delete account.
 
 ### Groups
-#### `POST /api/groups`
-- **Description:** Create a new class/group linking to a course.
-- **Required Body Fields:** `name`, `courseId`
+- `POST /api/groups`: Create a group. (**Required:** `name`, `courseId`)
+- `GET /api/groups`: List all groups.
+- `GET /api/groups/:groupId`: Details with linked course and student list.
+- `PUT /api/groups/:groupId` | `DELETE /api/groups/:groupId`
 
-#### `GET /api/groups`
-- **Description:** Retrieve all groups.
-- **Requirements:** None
+---
 
-#### `GET /api/groups/:groupId`
-- **Description:** Retrieve a specific group by its ID. It includes the linked `course` data and a list of internal `students`.
-- **Required Path Params:** `groupId`
-
-#### `PUT /api/groups/:groupId`
-- **Description:** Update course details for a group.
-- **Required Path Params:** `groupId`
-- **Optional Body Fields:** `name`, `courseId`
-
-#### `DELETE /api/groups/:groupId`
-- **Description:** Delete a specific group by its ID.
-- **Required Path Params:** `groupId`
+## 📚 Curriculum & Homework (Admin)
+### Courses
+- `POST /api/courses`: Create a course. (**Required:** `name`, `description`)
+- `GET /api/courses` | `GET /api/courses/:courseId`
+- `PUT /api/courses/:courseId` | `DELETE /api/courses/:courseId`
 
 ### Homeworks
-#### `POST /api/homeworks`
-- **Description:** Issue a new homework assignment to a specific student.
-- **Required Body Fields:** `title`, `description`, `deadline` (date string), `studentId`
-- **Optional Body Fields:** `checked` (boolean, defaults to false), `point` (number)
+- `POST /api/homeworks`: Issue homework.
+- **Required Body:** `title`, `description`, `deadline`, `studentId`
+- **Optional Body:** `checked` (Bool), `point` (Int)
+- `GET /api/homeworks`: List all. Use `?studentId=<id>` to filter.
+- `PUT /api/homeworks/:homeworkId` | `DELETE /api/homeworks/:homeworkId`
 
-#### `GET /api/homeworks`
-- **Description:** Retrieve a list of homework assignments. Can be optionally filtered for a specific student.
-- **Optional Query Params:** `studentId` (e.g. `?studentId=<id>`)
+---
 
-#### `GET /api/homeworks/:homeworkId`
-- **Description:** Get an individual homework item by ID. Includes `student` and `studentActivity` relational data.
-- **Required Path Params:** `homeworkId`
+## 📈 Student Activities/Ratings (Admin)
+### Log Activity
+`POST /api/student-activities`
+- **Required Body:** `studentId`, `rating`
+- **Description:** Logs general behavior or performance rating.
 
-#### `PUT /api/homeworks/:homeworkId`
-- **Description:** Update properties of an existing homework.
-- **Required Path Params:** `homeworkId`
-- **Optional Body Fields:** `deadline`, `point`, `title`, `description`, `checked`, `studentId`, `studentActivityId`.
-
-#### `DELETE /api/homeworks/:homeworkId`
-- **Description:** Delete a specific homework instance.
-- **Required Path Params:** `homeworkId`
-
-### Student Activities
-#### `POST /api/student-activities`
-- **Description:** Log a new activity/rating for a student.
-- **Required Body Fields:** `studentId`, `rating`
-
-#### `GET /api/student-activities`
-- **Description:** Retrieve student activities in descending order. Can be filtered by a specific student.
-- **Optional Query Params:** `studentId` (e.g. `?studentId=<id>`)
-
-#### `GET /api/student-activities/:activityId`
-- **Description:** Pick a single distinct activity by ID. Includes nested data about `student` and `tasks` (homeworks).
-- **Required Path Params:** `activityId`
-
-#### `PUT /api/student-activities/:activityId`
-- **Description:** Update a logged student activity.
-- **Required Path Params:** `activityId`
-- **Optional Body Fields:** `studentId`, `rating`
-
-#### `DELETE /api/student-activities/:activityId`
-- **Description:** Delete a specific student activity instance.
-- **Required Path Params:** `activityId`
+### Manage Activities
+- `GET /api/student-activities`: List all or filter by `?studentId=<id>`.
+- `GET /api/student-activities/:activityId`: Get single log.
+- `PUT /api/student-activities/:activityId` | `DELETE /api/student-activities/:activityId`

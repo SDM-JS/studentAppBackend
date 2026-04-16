@@ -76,3 +76,18 @@ export type Homework = Prisma.HomeworkModel
  * 
  */
 export type StudentActivity = Prisma.StudentActivityModel
+/**
+ * Model Question
+ * 
+ */
+export type Question = Prisma.QuestionModel
+/**
+ * Model Test
+ * 
+ */
+export type Test = Prisma.TestModel
+/**
+ * Model Submission
+ * 
+ */
+export type Submission = Prisma.SubmissionModel

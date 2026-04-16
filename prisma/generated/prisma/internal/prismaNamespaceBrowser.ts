@@ -57,7 +57,10 @@ export const ModelName = {
   Group: 'Group',
   Course: 'Course',
   Homework: 'Homework',
-  StudentActivity: 'StudentActivity'
+  StudentActivity: 'StudentActivity',
+  Question: 'Question',
+  Test: 'Test',
+  Submission: 'Submission'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -163,6 +166,44 @@ export const StudentActivityScalarFieldEnum = {
 } as const
 
 export type StudentActivityScalarFieldEnum = (typeof StudentActivityScalarFieldEnum)[keyof typeof StudentActivityScalarFieldEnum]
+
+
+export const QuestionScalarFieldEnum = {
+  id: 'id',
+  text: 'text',
+  points: 'points',
+  options: 'options',
+  answer: 'answer',
+  testId: 'testId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type QuestionScalarFieldEnum = (typeof QuestionScalarFieldEnum)[keyof typeof QuestionScalarFieldEnum]
+
+
+export const TestScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  allPoints: 'allPoints',
+  scheduledDate: 'scheduledDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TestScalarFieldEnum = (typeof TestScalarFieldEnum)[keyof typeof TestScalarFieldEnum]
+
+
+export const SubmissionScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  testId: 'testId',
+  score: 'score',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubmissionScalarFieldEnum = (typeof SubmissionScalarFieldEnum)[keyof typeof SubmissionScalarFieldEnum]
 
 
 export const SortOrder = {

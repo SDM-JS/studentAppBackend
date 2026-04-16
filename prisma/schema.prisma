@@ -20,6 +20,7 @@ model Student {
   studentActivities StudentActivity[]
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+  submits           Submission[]
 }
 
 model Admin {
@@ -83,4 +84,38 @@ model StudentActivity {
   tasks     Homework[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+}
+
+model Question {
+  id        String   @id @default(nanoid())
+  text      String   @map("question")
+  points    Int
+  options   String[]
+  answer    String
+  test      Test?    @relation(fields: [testId], references: [id])
+  testId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Test {
+  id            String       @id @default(nanoid())
+  title         String
+  questions     Question[]
+  allPoints     Int          @default(0)
+  scheduledDate DateTime     @unique
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  submissions   Submission[]
+}
+
+model Submission {
+  id        String   @id @default(nanoid())
+  student   Student? @relation(fields: [studentId], references: [id])
+  studentId String?
+  test      Test?    @relation(fields: [testId], references: [id])
+  testId    String
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

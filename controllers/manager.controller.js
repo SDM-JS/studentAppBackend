@@ -710,6 +710,17 @@ class Manager {
       next(error);
     }
   }
+  async CreateTest(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new Manager();

@@ -6,6 +6,7 @@ import helmet from "helmet";
 import errorMiddleware from "./middleware/error.middleware.js";
 import router from "./routes/auth.routes.js";
 import managerRoutes from "./routes/manager.routes.js";
+import testRouter from "./routes/test.routes.js";
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get("/healthxyz", (req, res) => {
 app.use(express.json());
 app.use(router);
 app.use(managerRoutes);
+app.use(testRouter);
 app.use(morgan("combined"));
 app.use(helmet());
 app.use(errorMiddleware);
