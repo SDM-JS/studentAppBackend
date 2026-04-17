@@ -31,6 +31,9 @@ export default async function (req, res, next) {
       },
     });
     let student;
+    if (!query) {
+      return next(BaseError.Forbidden());
+    }
     if (query) {
       student = {
         fullName: query.fullName,
@@ -55,5 +58,8 @@ export default async function (req, res, next) {
     }
     req.student = student;
     next();
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    return next(BaseError.Unauthorized());
+  }
 }
