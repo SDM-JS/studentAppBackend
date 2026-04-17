@@ -88,7 +88,7 @@ CREATE TABLE "StudentActivity" (
 );
 
 -- CreateTable
-CREATE TABLE "Quiz" (
+CREATE TABLE "Question" (
     "id" TEXT NOT NULL,
     "question" TEXT NOT NULL,
     "points" INTEGER NOT NULL,
@@ -98,19 +98,35 @@ CREATE TABLE "Quiz" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Quiz_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Question_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Test" (
     "id" TEXT NOT NULL,
-    "studentId" TEXT,
-    "allPoints" INTEGER NOT NULL,
+    "title" TEXT NOT NULL,
+    "allPoints" INTEGER NOT NULL DEFAULT 0,
+    "scheduledDate" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Test_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateTable
+CREATE TABLE "Submission" (
+    "id" TEXT NOT NULL,
+    "studentId" TEXT,
+    "testId" TEXT NOT NULL,
+    "score" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Submission_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Test_scheduledDate_key" ON "Test"("scheduledDate");
 
 -- AddForeignKey
 ALTER TABLE "Student" ADD CONSTRAINT "Student_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -128,7 +144,10 @@ ALTER TABLE "Homework" ADD CONSTRAINT "Homework_studentActivityId_fkey" FOREIGN 
 ALTER TABLE "StudentActivity" ADD CONSTRAINT "StudentActivity_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Quiz" ADD CONSTRAINT "Quiz_testId_fkey" FOREIGN KEY ("testId") REFERENCES "Test"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Question" ADD CONSTRAINT "Question_testId_fkey" FOREIGN KEY ("testId") REFERENCES "Test"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Test" ADD CONSTRAINT "Test_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_testId_fkey" FOREIGN KEY ("testId") REFERENCES "Test"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
