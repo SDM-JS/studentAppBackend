@@ -2,127 +2,113 @@ import { prisma } from "../lib/prisma.js";
 import BaseError from "../errors/base.error.js";
 
 class TestController {
-  // Admin: Create tests for multiple days
+  // Admin: Create quiz schemas (batch)
+  // Body: { tests: [{ type, title, desc, difficulty, topic, image, givenTime, extraTime, score, isDaily, isActive, input, explanation, variants: [{ option, isTrue }] }] }
   async createBatchTests(req, res, next) {
     try {
       if (req.student.role !== "org::admin") {
         return next(BaseError.Forbidden());
       }
 
-      const { tests } = req.body; // Array of { title, scheduledDate, questions: [{ text, points, options, answer }] }
-      
-      if (!Array.isArray(tests)) {
-        return next(BaseError.BadRequest("Expected an array of tests"));
+      const { tests } = req.body;
+
+      if (!Array.isArray(tests) || tests.length === 0) {
+        return next(BaseError.BadRequest("Expected a non-empty array of tests"));
       }
 
-      const createdTests = [];
-      for (const testData of tests) {
-        const { title, scheduledDate, questions } = testData;
-        
-        // Calculate total points
-        const allPoints = questions.reduce((sum, q) => sum + (Number(q.points) || 0), 0);
+      const created = [];
+      for (const t of tests) {
+        const { type, title, desc, difficulty, topic, image, givenTime, extraTime, score, isDaily, isActive, input, explanation, variants } = t;
 
-        const testDate = new Date(scheduledDate);
-        testDate.setHours(0, 0, 0, 0);
-
-        const test = await prisma.test.create({
+        const quiz = await prisma.quizSchema.create({
           data: {
+            type,
             title,
-            scheduledDate: testDate,
-            allPoints,
-            questions: {
-              create: questions.map(q => ({
-                text: q.text,
-                points: Number(q.points),
-                options: q.options,
-                answer: q.answer
-              }))
-            }
+            desc: desc ?? null,
+            difficulty,
+            topic,
+            image: image ?? null,
+            givenTime,
+            extraTime: extraTime ?? 0,
+            score,
+            isDaily: isDaily ?? false,
+            isActive: isActive ?? true,
+            input: input ?? "",
+            explanation: explanation ?? "",
+            variants: {
+              create: (variants || []).map((v) => ({
+                option: v.option,
+                isTrue: v.isTrue,
+              })),
+            },
           },
-          include: { questions: true }
+          include: { variants: true },
         });
-        createdTests.push(test);
+
+        created.push(quiz);
       }
 
-      res.status(201).json(createdTests);
+      res.status(201).json(created);
     } catch (error) {
-      if (error.code === 'P2002') {
-        return next(BaseError.BadRequest("A test is already scheduled for one of the selected dates."));
-      }
       next(error);
     }
   }
 
-  // Student: Get today's test
+  // Student / Admin: Get the active daily quiz
   async getDailyTest(req, res, next) {
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const test = await prisma.test.findUnique({
-        where: { scheduledDate: today },
-        include: { questions: true }
+      const quiz = await prisma.quizSchema.findFirst({
+        where: { isDaily: true, isActive: true },
+        include: { variants: true },
       });
 
-      if (!test) {
-        return res.status(404).json({ message: "No test scheduled for today." });
+      if (!quiz) {
+        return res.status(404).json({ message: "No daily test available." });
       }
 
-      // Check if already submitted
+      // Check if this student already submitted
       const submission = await prisma.submission.findFirst({
-        where: { 
-          testId: test.id,
-          studentId: req.student.id
-        }
+        where: {
+          quizSchemaId: quiz.id,
+          studentId: req.student.id,
+        },
       });
 
-      res.status(200).json({ ...test, submitted: !!submission, submission });
+      res.status(200).json({ ...quiz, submitted: !!submission, submission });
     } catch (error) {
       next(error);
     }
   }
 
-  // Student: Submit answers
+  // Student: Submit a quiz (one submission per quiz per student)
+  // Body: { quizSchemaId }
   async submitTest(req, res, next) {
     try {
-      const { testId, answers } = req.body; // answers: { [questionId]: selectedOption }
+      const { quizSchemaId } = req.body;
       const studentId = req.student.id;
 
-      if (!testId || !answers) {
-        return next(BaseError.BadRequest("Missing testId or answers"));
+      if (!quizSchemaId) {
+        return next(BaseError.BadRequest("Missing quizSchemaId"));
       }
 
-      const test = await prisma.test.findUnique({
-        where: { id: testId },
-        include: { questions: true }
+      const quiz = await prisma.quizSchema.findUnique({
+        where: { id: quizSchemaId },
       });
 
-      if (!test) {
-        return next(BaseError.BadRequest("Test not found"));
+      if (!quiz) {
+        return next(BaseError.BadRequest("Quiz not found"));
       }
 
-      // Check for existing submission
       const existing = await prisma.submission.findFirst({
-        where: { testId, studentId }
+        where: { quizSchemaId, studentId },
       });
 
       if (existing) {
-        return next(BaseError.BadRequest("You have already submitted this test"));
+        return next(BaseError.BadRequest("You have already submitted this quiz"));
       }
 
-      let score = 0;
-      test.questions.forEach(q => {
-        if (answers[q.id] === q.answer) {
-          score += q.points;
-        }
-      });
-
       const submission = await prisma.submission.create({
-        data: {
-          testId,
-          studentId,
-          score
-        }
+        data: { quizSchemaId, studentId },
       });
 
       res.status(201).json(submission);
@@ -131,25 +117,38 @@ class TestController {
     }
   }
 
-  // Leaderboard (Ratings)
+  // All authenticated: Leaderboard ranked by total score of completed quizzes
   async getLeaderboard(req, res, next) {
     try {
-      const leaderboard = await prisma.student.findMany({
+      const students = await prisma.student.findMany({
         select: {
           id: true,
           fullName: true,
+          rating: true,
+          level: true,
           submits: {
-            select: { score: true }
-          }
-        }
+            select: {
+              quizSchema: {
+                select: { score: true },
+              },
+            },
+          },
+        },
       });
 
-      const formatted = leaderboard.map(s => ({
-        id: s.id,
-        fullName: s.fullName,
-        totalScore: s.submits.reduce((sum, sub) => sum + sub.score, 0),
-        testsCompleted: s.submits.length
-      })).sort((a, b) => b.totalScore - a.totalScore);
+      const formatted = students
+        .map((s) => ({
+          id: s.id,
+          fullName: s.fullName,
+          rating: s.rating,
+          level: s.level,
+          totalScore: s.submits.reduce(
+            (sum, sub) => sum + (sub.quizSchema?.score ?? 0),
+            0,
+          ),
+          testsCompleted: s.submits.length,
+        }))
+        .sort((a, b) => b.totalScore - a.totalScore);
 
       res.status(200).json(formatted);
     } catch (error) {
@@ -157,17 +156,19 @@ class TestController {
     }
   }
 
-  // Admin: Get all tests
+  // Admin: Get all quiz schemas
   async getAllTests(req, res, next) {
     try {
       if (req.student.role !== "org::admin") {
         return next(BaseError.Forbidden());
       }
-      const tests = await prisma.test.findMany({
-        include: { questions: true },
-        orderBy: { scheduledDate: 'desc' }
+
+      const quizzes = await prisma.quizSchema.findMany({
+        include: { variants: true, submittedUsers: true },
+        orderBy: { createdAt: "desc" },
       });
-      res.status(200).json(tests);
+
+      res.status(200).json(quizzes);
     } catch (error) {
       next(error);
     }

@@ -20,6 +20,16 @@ model Student {
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   submits           Submission[]
+  rating            Int               @default(0)
+  level             Difficulty        @default(easy)
+  notes             Notes[]
+}
+
+model Notes {
+  id        String   @id @default(nanoid())
+  text      String
+  student   Student? @relation(fields: [studentId], references: [id])
+  studentId String?
 }
 
 model Admin {
@@ -85,36 +95,58 @@ model StudentActivity {
   updatedAt DateTime   @updatedAt
 }
 
-model Question {
-  id        String   @id @default(nanoid())
-  text      String   @map("question")
-  points    Int
-  options   String[]
-  answer    String
-  test      Test?    @relation(fields: [testId], references: [id])
-  testId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model QuizSchema {
+  id             String       @id @default(nanoid())
+  type           QuizTypes
+  title          String
+  desc           String?
+  difficulty     Difficulty
+  topic          String
+  image          String?
+  givenTime      Int
+  extraTime      Int
+  score          Int
+  isDaily        Boolean
+  isActive       Boolean
+  input          String
+  explanation    String
+  variants       Variants[]
+  submittedUsers Submission[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
-model Test {
-  id            String       @id @default(nanoid())
-  title         String
-  questions     Question[]
-  allPoints     Int          @default(0)
-  scheduledDate DateTime     @unique
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  submissions   Submission[]
+model Variants {
+  id           String      @id @default(nanoid())
+  option       String
+  isTrue       Boolean
+  quizSchema   QuizSchema? @relation(fields: [quizSchemaId], references: [id])
+  quizSchemaId String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Submission {
-  id        String   @id @default(nanoid())
-  student   Student? @relation(fields: [studentId], references: [id])
-  studentId String?
-  test      Test?    @relation(fields: [testId], references: [id])
-  testId    String
-  score     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String      @id @default(nanoid())
+  student      Student?    @relation(fields: [studentId], references: [id])
+  studentId    String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  quizSchema   QuizSchema? @relation(fields: [quizSchemaId], references: [id])
+  quizSchemaId String?
+}
+
+enum QuizTypes {
+  multipleChoice
+  bugHunting
+  expectedOutput
+  missingCode
+}
+
+enum Difficulty {
+  easy
+  medium
+  hard
+  expert
+  master
 }

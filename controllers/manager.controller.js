@@ -49,7 +49,7 @@ class Manager {
       return res.json({ news: allNews });
     } catch (error) {
       next(error);
-      // console.log(error);
+      console.log(error);
     }
   }
   async getLatestNews(req, res, next) {
@@ -148,7 +148,7 @@ class Manager {
           id: studentId,
         },
       });
-      return res.status(304).json({ message: "Student deleted successfully!" });
+      return res.status(200).json({ message: "Student deleted successfully!" });
     } catch (error) {
       next(error);
     }
@@ -710,17 +710,7 @@ class Manager {
       next(error);
     }
   }
-  async CreateTest(req, res, next) {
-    try {
-      const { role } = req.student;
-      if (role !== "org::admin") {
-        res.status(403).json({ error: "Forbidden" });
-        throw BaseError.Forbidden();
-      }
-    } catch (error) {
-      next(error);
-    }
-  }
+
 }
 
 export default new Manager();

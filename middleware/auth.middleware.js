@@ -11,7 +11,6 @@ export default async function (req, res, next) {
       return next(BaseError.Unauthorized());
     }
     const token = authorization.split(" ")[1];
-
     if (!token) {
       return next(BaseError.Unauthorized());
     }
@@ -31,16 +30,10 @@ export default async function (req, res, next) {
       },
     });
     let student;
-    if (!query) {
-      return next(BaseError.Forbidden());
-    }
     if (query) {
       student = {
-        fullName: query.fullName,
         id: query.id,
         email: query.email,
-        parentNumber: query.parentNumber,
-        username: query.username,
         role,
       };
     }
@@ -49,7 +42,8 @@ export default async function (req, res, next) {
         fullName: studentQuery.fullName,
         id: studentQuery.id,
         email: studentQuery.email,
-        phoneNumber: studentQuery.phoneNumber,
+        parentNumber: studentQuery.parentNumber,
+        username: studentQuery.username,
         role,
       };
     }

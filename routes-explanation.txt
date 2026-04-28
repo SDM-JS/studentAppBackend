@@ -43,39 +43,43 @@ These endpoints are used for user registration and login.
 ---
 
 ## 📝 Quiz & Daily Tests (Protected)
-Managed via `TestController`. Designed for daily performance tracking.
+Managed via `TestController`. Backed by `QuizSchema`, `Variants`, and `Submission` Prisma models.
 
-### Create Batch Tests (Admin Only)
+### Create Quiz Schemas — Batch (Admin Only)
 `POST /api/tests/batch`
-- **Description:** Schedules tests for multiple dates.
+- **Description:** Creates one or more quiz entries with answer variants.
 - **Required Body:**
-  - `tests` (Array of Tests):
+  - `tests` (Array):
+    - `type` (Enum): `multipleChoice` | `bugHunting` | `expectedOutput` | `missingCode`
     - `title` (String)
-    - `scheduledDate` (Date String - e.g., "2024-04-16")
-    - `questions` (Array of Questions):
-      - `text` (String): The question body.
-      - `points` (Number): Points awarded for correct answer.
-      - `options` (Array of Strings): Answer choices.
-      - `answer` (String): The correct option matching one entry in `options`.
+    - `difficulty` (Enum): `easy` | `medium` | `hard` | `expert` | `master`
+    - `topic` (String)
+    - `givenTime` (Int): Time in seconds.
+    - `extraTime` (Int): Extra time in seconds.
+    - `score` (Int): Points for completing this quiz.
+    - `isDaily` (Boolean): Whether this is today's daily quiz.
+    - `isActive` (Boolean)
+    - `input` (String): Code input / question body.
+    - `explanation` (String): Explanation of the answer.
+    - `variants` (Array): `[{ option: String, isTrue: Boolean }]`
+- **Optional Body per test:** `desc`, `image`
 
-### Get Today's Test
+### Get Daily Active Quiz
 `GET /api/tests/daily`
-- **Description:** Fetches the test scheduled for today.
+- **Description:** Fetches the quiz where `isDaily: true` and `isActive: true`.
 - **Access:** Student / Admin
-- **Returns:** Test structure with questions. Includes `submitted: true/false`.
+- **Returns:** `QuizSchema` with `variants[]`. Includes `submitted: true/false` and `submission` object.
 
-### Submit Test Answers
+### Submit Quiz
 `POST /api/tests/submit`
-- **Description:** Submits student answers and calculates the final score.
+- **Description:** Records a student's quiz submission (one per quiz per student).
 - **Required Body:**
-  - `testId` (String): ID of the test being submitted.
-  - `answers` (Object): Map of Question IDs to selected options.
-    - Example: `{ "question_id_1": "Paris", "question_id_2": "10" }`
-- **Access:** Student (One submission per test per student).
+  - `quizSchemaId` (String): ID of the `QuizSchema` being submitted.
+- **Access:** Student only (one submission per quiz).
 
 ### Leaderboard / Ratings
 `GET /api/tests/leaderboard`
-- **Description:** Returns the ranking of best students based on total quiz points earned.
+- **Description:** Returns students ranked by total score (sum of `QuizSchema.score` for all submissions).
 - **Access:** All Authenticated Users
 
 ---
