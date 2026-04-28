@@ -11,7 +11,6 @@ export default async function (req, res, next) {
       return next(BaseError.Unauthorized());
     }
     const token = authorization.split(" ")[1];
-
     if (!token) {
       return next(BaseError.Unauthorized());
     }
@@ -31,9 +30,6 @@ export default async function (req, res, next) {
       },
     });
     let student;
-    if (!query) {
-      return next(BaseError.Forbidden());
-    }
     if (query) {
       student = {
         fullName: query.fullName,
@@ -45,6 +41,7 @@ export default async function (req, res, next) {
       };
     }
     if (studentQuery) {
+      console.log("Sevens");
       student = {
         fullName: studentQuery.fullName,
         id: studentQuery.id,
