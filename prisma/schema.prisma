@@ -23,6 +23,8 @@ model Student {
   rating            Int               @default(0)
   level             Difficulty        @default(easy)
   notes             Notes[]
+  tasks             Tasks?            @relation(fields: [tasksId], references: [id])
+  tasksId           String?
 }
 
 model Notes {
@@ -134,6 +136,53 @@ model Submission {
   updatedAt    DateTime    @updatedAt
   quizSchema   QuizSchema? @relation(fields: [quizSchemaId], references: [id])
   quizSchemaId String?
+}
+
+model Tasks {
+  id          String     @id @default(nanoid())
+  title       String
+  topic       String
+  level       Difficulty
+  desc        String     @db.VarChar(255)
+  learn       Learn[]
+  completed   Student[]
+  correctCode String
+  test        Test[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Test {
+  id        String    @id @default(nanoid())
+  title     String
+  question  String
+  imageUrl  String?
+  options   Options[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  tasks     Tasks?    @relation(fields: [tasksId], references: [id])
+  tasksId   String?
+}
+
+model Options {
+  id        String   @id @default(nanoid())
+  answer    String
+  imageUrl  String?
+  isCorrect Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  test      Test?    @relation(fields: [testId], references: [id])
+  testId    String?
+}
+
+model Learn {
+  id        String   @id @default(nanoid())
+  imageUrl  String
+  desc      String
+  tasks     Tasks?   @relation(fields: [tasksId], references: [id])
+  tasksId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum QuizTypes {

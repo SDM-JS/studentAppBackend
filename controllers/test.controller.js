@@ -54,16 +54,30 @@ class TestController {
     }
   }
 
-  // Student / Admin: Get the active daily quiz
+  // Student / Admin: Get the active daily quiz for a given difficulty level
+  // Requires header: level: easy | medium | hard | expert | master
   async getDailyTest(req, res, next) {
     try {
+      const VALID_LEVELS = ["easy", "medium", "hard", "expert", "master"];
+      const level = req.headers["level"];
+
+      if (!level || !VALID_LEVELS.includes(level)) {
+        return next(
+          BaseError.BadRequest(
+            `Missing or invalid 'level' header. Must be one of: ${VALID_LEVELS.join(", ")}`,
+          ),
+        );
+      }
+
       const quiz = await prisma.quizSchema.findFirst({
-        where: { isDaily: true, isActive: true },
+        where: { isDaily: true, isActive: true, difficulty: level },
         include: { variants: true },
       });
 
       if (!quiz) {
-        return res.status(404).json({ message: "No daily test available." });
+        return res
+          .status(404)
+          .json({ message: `No active daily test for difficulty: ${level}` });
       }
 
       // Check if this student already submitted

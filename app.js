@@ -7,8 +7,15 @@ import errorMiddleware from "./middleware/error.middleware.js";
 import router from "./routes/auth.routes.js";
 import managerRoutes from "./routes/manager.routes.js";
 import testRouter from "./routes/test.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
+import notesRoutes from "./routes/notes.routes.js";
+import tasksRoutes from "./routes/tasks.routes.js";
+import variantsRoutes from "./routes/variants.routes.js";
+import { startCronJobs } from "./lib/cron.js";
 
 const app = express();
+
+startCronJobs();
 
 app.use(
   cors({
@@ -22,6 +29,10 @@ app.use(express.json());
 app.use(router);
 app.use(managerRoutes);
 app.use(testRouter);
+app.use(adminRoutes);
+app.use(notesRoutes);
+app.use(tasksRoutes);
+app.use(variantsRoutes);
 app.use(morgan("combined"));
 app.use(helmet());
 app.use(errorMiddleware);

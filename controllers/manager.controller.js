@@ -711,6 +711,605 @@ class Manager {
     }
   }
 
+  // Admin CRUD
+  async createAdmin(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required!" });
+      }
+      const existingAdmin = await prisma.admin.findFirst({ where: { email } });
+      if (existingAdmin) {
+        return res.status(400).json({ error: "Admin with this email already exists!" });
+      }
+      const admin = await prisma.admin.create({
+        data: { email, password },
+      });
+      return res.status(201).json({ message: "Admin created successfully!", admin });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllAdmins(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const admins = await prisma.admin.findMany({
+        orderBy: { createdAt: "desc" },
+      });
+      return res.status(200).json({ admins });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSingleAdmin(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { adminId } = req.params;
+      if (!adminId) {
+        return res.status(400).json({ error: "Admin ID is required!" });
+      }
+      const admin = await prisma.admin.findUnique({
+        where: { id: adminId },
+      });
+      if (!admin) {
+        return res.status(404).json({ error: "Admin not found!" });
+      }
+      return res.status(200).json({ admin });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateAdmin(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { adminId } = req.params;
+      if (!adminId) {
+        return res.status(400).json({ error: "Admin ID is required!" });
+      }
+      const admin = await prisma.admin.update({
+        where: { id: adminId },
+        data: { ...req.body },
+      });
+      return res.status(200).json({ message: "Admin updated successfully!", admin });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteAdmin(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { adminId } = req.params;
+      if (!adminId) {
+        return res.status(400).json({ error: "Admin ID is required!" });
+      }
+      await prisma.admin.delete({
+        where: { id: adminId },
+      });
+      return res.status(200).json({ message: "Admin deleted successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Notes CRUD
+  async createNote(req, res, next) {
+    try {
+      const { text, studentId } = req.body;
+      if (!text) {
+        return res.status(400).json({ error: "Text is required!" });
+      }
+      const note = await prisma.notes.create({
+        data: {
+          text,
+          studentId: studentId || req.student.id,
+        },
+      });
+      return res.status(201).json({ message: "Note created successfully!", note });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllNotes(req, res, next) {
+    try {
+      const { studentId } = req.query;
+      const whereClause = studentId ? { studentId } : {};
+      const notes = await prisma.notes.findMany({
+        where: whereClause,
+        include: { student: true },
+        orderBy: { createdAt: "desc" },
+      });
+      return res.status(200).json({ notes });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSingleNote(req, res, next) {
+    try {
+      const { noteId } = req.params;
+      if (!noteId) {
+        return res.status(400).json({ error: "Note ID is required!" });
+      }
+      const note = await prisma.notes.findUnique({
+        where: { id: noteId },
+        include: { student: true },
+      });
+      if (!note) {
+        return res.status(404).json({ error: "Note not found!" });
+      }
+      return res.status(200).json({ note });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateNote(req, res, next) {
+    try {
+      const { noteId } = req.params;
+      if (!noteId) {
+        return res.status(400).json({ error: "Note ID is required!" });
+      }
+      const note = await prisma.notes.update({
+        where: { id: noteId },
+        data: { ...req.body },
+      });
+      return res.status(200).json({ message: "Note updated successfully!", note });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteNote(req, res, next) {
+    try {
+      const { noteId } = req.params;
+      if (!noteId) {
+        return res.status(400).json({ error: "Note ID is required!" });
+      }
+      await prisma.notes.delete({
+        where: { id: noteId },
+      });
+      return res.status(200).json({ message: "Note deleted successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Tasks CRUD
+  async createTask(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { title, topic, level, desc, learn, correctCode } = req.body;
+      if (!title || !topic || !level || !desc || !correctCode) {
+        return res.status(400).json({ error: "Title, topic, level, desc, and correctCode are required!" });
+      }
+      const task = await prisma.tasks.create({
+        data: {
+          title,
+          topic,
+          level,
+          desc,
+          correctCode,
+          learn: learn?.length
+            ? { create: learn.map((l) => ({ imageUrl: l.imageUrl, desc: l.desc })) }
+            : undefined,
+        },
+        include: { learn: true },
+      });
+      return res.status(201).json({ message: "Task created successfully!", task });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllTasks(req, res, next) {
+    try {
+      const { level, topic } = req.query;
+      const whereClause = {};
+      if (level) whereClause.level = level;
+      if (topic) whereClause.topic = topic;
+      const tasks = await prisma.tasks.findMany({
+        where: whereClause,
+        include: { learn: true, completed: true },
+        orderBy: { createdAt: "desc" },
+      });
+      return res.status(200).json({ tasks });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSingleTask(req, res, next) {
+    try {
+      const { taskId } = req.params;
+      if (!taskId) {
+        return res.status(400).json({ error: "Task ID is required!" });
+      }
+      const task = await prisma.tasks.findUnique({
+        where: { id: taskId },
+        include: { learn: true, completed: true },
+      });
+      if (!task) {
+        return res.status(404).json({ error: "Task not found!" });
+      }
+      return res.status(200).json({ task });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateTask(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { taskId } = req.params;
+      if (!taskId) {
+        return res.status(400).json({ error: "Task ID is required!" });
+      }
+      const { learn, ...rest } = req.body;
+      const task = await prisma.tasks.update({
+        where: { id: taskId },
+        data: {
+          ...rest,
+          learn: learn?.length
+            ? {
+                deleteMany: {},
+                create: learn.map((l) => ({ imageUrl: l.imageUrl, desc: l.desc })),
+              }
+            : undefined,
+        },
+        include: { learn: true },
+      });
+      return res.status(200).json({ message: "Task updated successfully!", task });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteTask(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { taskId } = req.params;
+      if (!taskId) {
+        return res.status(400).json({ error: "Task ID is required!" });
+      }
+      await prisma.tasks.delete({
+        where: { id: taskId },
+      });
+      return res.status(200).json({ message: "Task deleted successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Learn CRUD
+  async createLearn(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { imageUrl, desc, tasksId } = req.body;
+      if (!imageUrl || !desc) {
+        return res.status(400).json({ error: "ImageUrl and desc are required!" });
+      }
+      const learn = await prisma.learn.create({
+        data: { imageUrl, desc, tasksId },
+      });
+      return res.status(201).json({ message: "Learn resource created successfully!", learn });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllLearn(req, res, next) {
+    try {
+      const { tasksId } = req.query;
+      const whereClause = tasksId ? { tasksId } : {};
+      const learns = await prisma.learn.findMany({
+        where: whereClause,
+        include: { tasks: true },
+        orderBy: { createdAt: "desc" },
+      });
+      return res.status(200).json({ learns });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSingleLearn(req, res, next) {
+    try {
+      const { learnId } = req.params;
+      if (!learnId) {
+        return res.status(400).json({ error: "Learn ID is required!" });
+      }
+      const learn = await prisma.learn.findUnique({
+        where: { id: learnId },
+        include: { tasks: true },
+      });
+      if (!learn) {
+        return res.status(404).json({ error: "Learn resource not found!" });
+      }
+      return res.status(200).json({ learn });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateLearn(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { learnId } = req.params;
+      if (!learnId) {
+        return res.status(400).json({ error: "Learn ID is required!" });
+      }
+      const learn = await prisma.learn.update({
+        where: { id: learnId },
+        data: { ...req.body },
+      });
+      return res.status(200).json({ message: "Learn resource updated successfully!", learn });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteLearn(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { learnId } = req.params;
+      if (!learnId) {
+        return res.status(400).json({ error: "Learn ID is required!" });
+      }
+      await prisma.learn.delete({
+        where: { id: learnId },
+      });
+      return res.status(200).json({ message: "Learn resource deleted successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Variants CRUD
+  async createVariant(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { option, isTrue, quizSchemaId } = req.body;
+      if (!option || quizSchemaId === undefined) {
+        return res.status(400).json({ error: "Option and quizSchemaId are required!" });
+      }
+      const variant = await prisma.variants.create({
+        data: { option, isTrue: isTrue ?? false, quizSchemaId },
+      });
+      return res.status(201).json({ message: "Variant created successfully!", variant });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllVariants(req, res, next) {
+    try {
+      const { quizSchemaId } = req.query;
+      const whereClause = quizSchemaId ? { quizSchemaId } : {};
+      const variants = await prisma.variants.findMany({
+        where: whereClause,
+        include: { quizSchema: true },
+        orderBy: { createdAt: "desc" },
+      });
+      return res.status(200).json({ variants });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSingleVariant(req, res, next) {
+    try {
+      const { variantId } = req.params;
+      if (!variantId) {
+        return res.status(400).json({ error: "Variant ID is required!" });
+      }
+      const variant = await prisma.variants.findUnique({
+        where: { id: variantId },
+        include: { quizSchema: true },
+      });
+      if (!variant) {
+        return res.status(404).json({ error: "Variant not found!" });
+      }
+      return res.status(200).json({ variant });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateVariant(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { variantId } = req.params;
+      if (!variantId) {
+        return res.status(400).json({ error: "Variant ID is required!" });
+      }
+      const variant = await prisma.variants.update({
+        where: { id: variantId },
+        data: { ...req.body },
+      });
+      return res.status(200).json({ message: "Variant updated successfully!", variant });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteVariant(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { variantId } = req.params;
+      if (!variantId) {
+        return res.status(400).json({ error: "Variant ID is required!" });
+      }
+      await prisma.variants.delete({
+        where: { id: variantId },
+      });
+      return res.status(200).json({ message: "Variant deleted successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Submission CRUD
+  async createSubmission(req, res, next) {
+    try {
+      const { quizSchemaId, studentId } = req.body;
+      if (!quizSchemaId) {
+        return res.status(400).json({ error: "QuizSchemaId is required!" });
+      }
+      const submission = await prisma.submission.create({
+        data: {
+          quizSchemaId,
+          studentId: studentId || req.student.id,
+        },
+      });
+      return res.status(201).json({ message: "Submission created successfully!", submission });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllSubmissions(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { studentId, quizSchemaId } = req.query;
+      const whereClause = {};
+      if (studentId) whereClause.studentId = studentId;
+      if (quizSchemaId) whereClause.quizSchemaId = quizSchemaId;
+      const submissions = await prisma.submission.findMany({
+        where: whereClause,
+        include: { student: true, quizSchema: true },
+        orderBy: { createdAt: "desc" },
+      });
+      return res.status(200).json({ submissions });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSingleSubmission(req, res, next) {
+    try {
+      const { submissionId } = req.params;
+      if (!submissionId) {
+        return res.status(400).json({ error: "Submission ID is required!" });
+      }
+      const submission = await prisma.submission.findUnique({
+        where: { id: submissionId },
+        include: { student: true, quizSchema: true },
+      });
+      if (!submission) {
+        return res.status(404).json({ error: "Submission not found!" });
+      }
+      return res.status(200).json({ submission });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async updateSubmission(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { submissionId } = req.params;
+      if (!submissionId) {
+        return res.status(400).json({ error: "Submission ID is required!" });
+      }
+      const submission = await prisma.submission.update({
+        where: { id: submissionId },
+        data: { ...req.body },
+      });
+      return res.status(200).json({ message: "Submission updated successfully!", submission });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteSubmission(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { submissionId } = req.params;
+      if (!submissionId) {
+        return res.status(400).json({ error: "Submission ID is required!" });
+      }
+      await prisma.submission.delete({
+        where: { id: submissionId },
+      });
+      return res.status(200).json({ message: "Submission deleted successfully!" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new Manager();
