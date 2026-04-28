@@ -38,6 +38,7 @@ export default async function (req, res, next) {
       };
     }
     if (studentQuery) {
+      console.log("Sevens");
       student = {
         fullName: studentQuery.fullName,
         id: studentQuery.id,
