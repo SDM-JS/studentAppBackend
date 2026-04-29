@@ -1,6 +1,50 @@
 import BaseError from "../errors/base.error.js";
 import { prisma } from "../lib/prisma.js";
 class Manager {
+ async createTest(req, res, next) {
+  try {
+    const { role } = req.student;
+    if (role !== "org::admin") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const { title, question, imageUrl, tasksId, options } = req.body;
+
+
+    if (!title || !question || !options || !Array.isArray(options)) {
+      return res.status(400).json({ error: "Title, question va options massivi talab qilinadi!" });
+    }
+
+
+    const test = await prisma.test.create({
+      data: {
+        title,
+        question,
+        imageUrl,
+        tasksId, 
+        options: {
+         
+          create: options.map((opt) => ({
+            answer: opt.answer,
+            isCorrect: opt.isCorrect,
+            imageUrl: opt.imageUrl || null,
+          })),
+        },
+      },
+      include: {
+        options: true,
+      },
+    });
+
+    return res.status(201).json({
+      message: "Test va variantlar muvaffaqiyatli yaratildi!",
+      test,
+    });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+}
   async createNews(req, res, next) {
     try {
       const { title, description } = req.body;
