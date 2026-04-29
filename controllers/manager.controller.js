@@ -11,7 +11,7 @@ class Manager {
     const { title, question, imageUrl, tasksId, options } = req.body;
 
 
-    if (!title || !question || !options || !Array.isArray(options)) {
+    if (!title || !question || !options || !Array.isArray(options) || !tasksId) {
       return res.status(400).json({ error: "Title, question va options massivi talab qilinadi!" });
     }
 
