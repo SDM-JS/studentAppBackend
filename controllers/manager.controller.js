@@ -901,36 +901,41 @@ class Manager {
   }
 
   // Tasks CRUD
-  async createTask(req, res, next) {
-    try {
-      const { role } = req.student;
-      if (role !== "org::admin") {
-        res.status(403).json({ error: "Forbidden" });
-        throw BaseError.Forbidden();
-      }
-      const { title, topic, level, desc, learn, correctCode } = req.body;
-      if (!title || !topic || !level || !desc || !correctCode) {
-        return res.status(400).json({ error: "Title, topic, level, desc, and correctCode are required!" });
-      }
-      const task = await prisma.tasks.create({
-        data: {
-          title,
-          topic,
-          level,
-          desc,
-          correctCode,
-          learn: learn?.length
-            ? { create: learn.map((l) => ({ imageUrl: l.imageUrl, desc: l.desc })) }
-            : undefined,
-        },
-        include: { learn: true },
-      });
-      return res.status(201).json({ message: "Task created successfully!", task });
-    } catch (error) {
-      next(error);
+ async createTask(req, res, next) {
+  try {
+    const { role } = req.student;
+    if (role !== "org::admin") {
+      return res.status(403).json({ error: "Forbidden" });
     }
-  }
 
+    const { title, topic, level, desc, correctCode, learn, variants } = req.body;
+
+    // Task yaratish va unga bog'liq elementlarni qo'shish
+    const task = await prisma.tasks.create({
+      data: {
+        title,
+        topic,
+        level,
+        desc,
+        correctCode,
+        // Learn modelini yaratish (Agar massiv bo'lsa)
+        learn: learn && learn.length > 0 ? {
+          create: learn.map((item) => ({
+            imageUrl: item.imageUrl,
+            desc: item.desc,
+          })),
+        } : undefined,
+ 
+        
+      include: { learn: true, },
+    });
+
+    return res.status(201).json({ message: "Task va uning elementlari yaratildi!", task });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+}
   async getAllTasks(req, res, next) {
     try {
       const { level, topic } = req.query;
