@@ -6,6 +6,7 @@ const tasksRoutes = express.Router();
 
 // Tasks CRUD
 tasksRoutes.post("/api/tasks", authMiddleware, managerController.createTask);
+tasksRoutes.post("/api/tasks",authMiddleware,managerController.createTest);
 tasksRoutes.get("/api/tasks", authMiddleware, managerController.getAllTasks);
 tasksRoutes.get("/api/tasks/:taskId", authMiddleware, managerController.getSingleTask);
 tasksRoutes.put("/api/tasks/:taskId", authMiddleware, managerController.updateTask);
