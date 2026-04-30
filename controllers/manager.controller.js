@@ -982,10 +982,10 @@ class Manager {
 }
   async getAllTasks(req, res, next) {
     try {
-      const { level, topic } = req.query;
+      const { level } = req.query;
       const whereClause = {};
       if (level) whereClause.level = level;
-      if (topic) whereClause.topic = topic;
+  
       const tasks = await prisma.tasks.findMany({
         where: whereClause,
         include: { learn: true, completed: true },
