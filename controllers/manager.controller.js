@@ -986,7 +986,8 @@ async getAllTasks(req, res, next) {
     const tasks = await prisma.tasks.findMany({
       include: { 
         learn: true, 
-        completed: true 
+        completed: true ,
+       tests:true
       },
       orderBy: { 
         createdAt: "desc" 
