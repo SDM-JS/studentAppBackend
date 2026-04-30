@@ -980,22 +980,25 @@ class Manager {
     next(error);
   }
 }
-  async getAllTasks(req, res, next) {
-    try {
-      const { level, topic } = req.query;
-      const whereClause = {};
-      if (level) whereClause.level = level;
-      if (topic) whereClause.topic = topic;
-      const tasks = await prisma.tasks.findMany({
-        where: whereClause,
-        include: { learn: true, completed: true },
-        orderBy: { createdAt: "desc" },
-      });
-      return res.status(200).json({ tasks });
-    } catch (error) {
-      next(error);
-    }
+async getAllTasks(req, res, next) {
+  try {
+   
+    const tasks = await prisma.tasks.findMany({
+      include: { 
+        learn: true, 
+        completed: true ,
+       test:true
+      },
+      orderBy: { 
+        createdAt: "desc" 
+      },
+    });
+
+    return res.status(200).json({ tasks });
+  } catch (error) {
+    next(error);
   }
+}
 
   async getSingleTask(req, res, next) {
     try {
