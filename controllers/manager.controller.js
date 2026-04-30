@@ -971,7 +971,7 @@ class Manager {
         } : undefined,
  
         
-      include: { learn: true, }
+      include: { learn: true }
     });
 
     return res.status(201).json({ message: "Task va uning elementlari yaratildi!", task });
