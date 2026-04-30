@@ -952,9 +952,8 @@ class Manager {
       return res.status(403).json({ error: "Forbidden" });
     }
 
-    const { title, topic, level, desc, correctCode, learn, variants } = req.body;
+    const { title, topic, level, desc, correctCode, learn } = req.body;
 
-    // Task yaratish va unga bog'liq elementlarni qo'shish
     const task = await prisma.tasks.create({
       data: {
         title,
@@ -962,21 +961,22 @@ class Manager {
         level,
         desc,
         correctCode,
-        // Learn modelini yaratish (Agar massiv bo'lsa)
+        // Learn modelini bog'langan holda yaratish
         learn: learn && learn.length > 0 ? {
           create: learn.map((item) => ({
             imageUrl: item.imageUrl,
             desc: item.desc,
           })),
         } : undefined,
- 
-        
-      include: { learn: true }
+      }, // <-- data obyekti shu yerda yopilishi shart!
+      include: { 
+        learn: true 
+      }
     });
 
     return res.status(201).json({ message: "Task va uning elementlari yaratildi!", task });
   } catch (error) {
-    console.error(error);
+    console.error("Xatolik tafsiloti:", error);
     next(error);
   }
 }
