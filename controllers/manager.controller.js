@@ -987,7 +987,10 @@ async getAllTasks(req, res, next) {
       include: { 
         learn: true, 
         completed: true ,
-       test:true
+       test:{
+        options:true
+       }
+       
       },
       orderBy: { 
         createdAt: "desc" 
