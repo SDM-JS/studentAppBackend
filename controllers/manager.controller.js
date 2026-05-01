@@ -12,8 +12,7 @@ class Manager {
  })
    if(!singleOptions) return res.status(404).json({error:"Option not found or does not exists"})
 
-
-   
+   res.status(200).json({options:singleOptions})
   }catch(error){
    console.error(error);
     next(error);
