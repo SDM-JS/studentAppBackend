@@ -5,7 +5,7 @@ import authMiddleware from "../middleware/auth.middleware.js";
 const tasksRoutes = express.Router();
 
 tasksRoutes.post("/api/tasks", authMiddleware, managerController.createTask);
-taskRoutes.get("/api/tests",authMiddleware, managerController.getTestOptions)
+taskRoutes.get("/api/tests",authMiddleware, managerController.getTestOption)
 tasksRoutes.post("/api/tests",authMiddleware,managerController.createTest);
 tasksRoutes.get("/api/tasks", authMiddleware, managerController.getAllTasks);
 tasksRoutes.get("/api/tasks/:taskId", authMiddleware, managerController.getSingleTask);
