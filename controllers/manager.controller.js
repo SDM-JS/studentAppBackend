@@ -4,11 +4,14 @@ class Manager {
 
  async getTestOption(req,res,next){
   try{
-      const testId=req.params
-   if(!testId) return res.status(400).json({error:"Test id is required "})
+      const {id}=req.params
+   if(!id) return res.status(400).json({error:"Test id is required "})
 
- const singleOptions=await prisma.findUnique({
-  where:{id:taskId}
+ const singleOptions=await prisma.test.findUnique({
+  where:{id:id},
+  inlcude:{
+   option:true
+  }
  })
    if(!singleOptions) return res.status(404).json({error:"Option not found or does not exists"})
 
