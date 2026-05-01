@@ -9,8 +9,8 @@ class Manager {
 
  const singleOptions=await prisma.test.findUnique({
   where:{id:id},
-  inlcude:{
-   option:true
+  include:{
+   options:true
   }
  })
    if(!singleOptions) return res.status(404).json({error:"Option not found or does not exists"})
