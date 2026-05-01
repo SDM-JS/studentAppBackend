@@ -7,8 +7,8 @@ class Manager {
       const {id}=req.params
    if(!id) return res.status(400).json({error:"Test id is required "})
 
- const singleOptions=await prisma.test.findUnique({
-  where:{id:id},
+ const singleOptions=await prisma.test.findMany({
+  where:{taskId:id},
   include:{
    options:true
   }
