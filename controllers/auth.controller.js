@@ -27,6 +27,7 @@ class AuthController {
           username,
           password: hashedPassword,
           groupId: groupId || undefined,
+          level :'easy'
         },
       });
       return res.status(201).json({

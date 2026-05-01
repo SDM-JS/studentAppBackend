@@ -1,6 +1,27 @@
 import BaseError from "../errors/base.error.js";
 import { prisma } from "../lib/prisma.js";
 class Manager {
+
+ async getTestOption(req,res,next){
+  try{
+      const {id}=req.params
+   if(!id) return res.status(400).json({error:"Test id is required "})
+
+ const singleOptions=await prisma.test.findUnique({
+  where:{id:id},
+  include:{
+   options:true
+  }
+ })
+   if(!singleOptions) return res.status(404).json({error:"Option not found or does not exists"})
+
+   res.status(200).json({options:singleOptions})
+  }catch(error){
+   console.error(error);
+    next(error);
+  }
+ }
+ 
  async createTest(req, res, next) {
   try {
     const { role } = req.student;
@@ -987,7 +1008,10 @@ async getAllTasks(req, res, next) {
       include: { 
         learn: true, 
         completed: true ,
-       test:true
+       test:{
+        options:true
+       }
+       
       },
       orderBy: { 
         createdAt: "desc" 
