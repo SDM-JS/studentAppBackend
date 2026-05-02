@@ -5,8 +5,10 @@ async pushSubmitTask(req,res,next){
  try{
   const {taskId}=req.params
   const {id}=req.students
-  
   if(!taskId || !id) return res.status(400).json({error:"task id is not defind"})
+const singleTask=await prisma.task.findUnique({
+ where:{id:taskId}
+})
   
  }catch(error)
 }
