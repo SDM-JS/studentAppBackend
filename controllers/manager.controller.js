@@ -1,7 +1,7 @@
 import BaseError from "../errors/base.error.js";
 import { prisma } from "../lib/prisma.js";
 class Manager {
-async pushSubmitTask(req, res, next) {
+async submitTask(req, res, next) {
   try {
     const { taskId } = req.params;
     const { id } = req.students; 
