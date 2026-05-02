@@ -1,7 +1,39 @@
 import BaseError from "../errors/base.error.js";
 import { prisma } from "../lib/prisma.js";
 class Manager {
+async submitTask(req, res, next) {
+  try {
+    const { taskId } = req.params;
+    const { id } = req.students; 
 
+    if (!taskId || !id) {
+      return res.status(400).json({ error: "Task id required" });
+    }
+
+    const updatedTask = await prisma.tasks.update({
+      where: { 
+        id: taskId 
+      },
+      data: {
+        completed: {
+          connect: { id: id } 
+        }
+      },
+      include: {
+        completed: true 
+      }
+    });
+
+    return res.status(200).json({
+      message: "Task done!",
+      data: updatedTask
+    });
+
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+}
  async getTestOption(req,res,next){
   try{
       const {id}=req.params
