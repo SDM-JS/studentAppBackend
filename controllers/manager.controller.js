@@ -4,7 +4,7 @@ class Manager {
 async submitTask(req, res, next) {
   try {
     const { taskId } = req.params;
-    const { id } = req.students; 
+    const { id } = req.student; 
 
     if (!taskId || !id) {
       return res.status(400).json({ error: "Task id required" });
