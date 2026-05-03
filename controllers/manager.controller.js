@@ -24,6 +24,10 @@ async submitTask(req, res, next) {
       }
     });
 
+    if(!updatedTask){
+      return res.status(404).json({error:"task not found"})
+    }
+
     return res.status(200).json({
       message: "Task done!",
       data: updatedTask
