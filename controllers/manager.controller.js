@@ -7,22 +7,28 @@ async submitTask(req, res, next) {
     const { id } = req.student; 
 
     if (!taskId || !id) {
-      return res.status(400).json({ error: "Task id required" });
+      return res.status(400).json({ error: "Task ID and Student ID are required" });
     }
 
-  const updatedTask = await prisma.tasks.update({
-  where: { 
-    id: taskId 
-  },
-  data: {
-    completed: {
-      push: id // Bu yerda 'id' faqat bitta qiymat (masalan, foydalanuvchi ID-si)
-    }
-  },
-  include: {
-    completed: true 
+    const updatedTask = await prisma.tasks.update({
+      where: { 
+        id: taskId 
+      },
+      data: {
+        completed: {
+          
+          push: id 
+        }
+      }
+    });
+
+    return res.status(200).json(updatedTask);
+
+  } catch (error) {
+    console.error("Submit Task Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-});
+}
 
     if(!updatedTask){
       return res.status(404).json({error:"task not found"})
