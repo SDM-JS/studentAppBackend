@@ -548,7 +548,7 @@ async submitTask(req, res, next) {
     } catch (error) {
       next(error);
     }
-  }==> Exited with status 1
+  }
   // Homework Functions
   async createHomework(req, res, next) {
     try {
