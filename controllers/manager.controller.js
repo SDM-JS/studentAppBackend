@@ -548,7 +548,7 @@ async submitTask(req, res, next) {
     } catch (error) {
       next(error);
     }
-  }
+  }==> Exited with status 1
   // Homework Functions
   async createHomework(req, res, next) {
     try {
@@ -1038,7 +1038,7 @@ async getAllTasks(req, res, next) {
     const tasks = await prisma.tasks.findMany({
       include: { 
         learn: true, 
-      }
+      },
       orderBy: { 
         createdAt: "desc" 
       },
