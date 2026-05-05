@@ -16,32 +16,21 @@ async submitTask(req, res, next) {
       },
       data: {
         completed: {
-          
           push: id 
         }
       }
-    });
+    }); // <--- Mana bu yerda qavs yopilganiga ishonch hosil qiling
+
+    // Agar update muvaffaqiyatli bo'lsa, updatedTask obyekt qaytaradi
+    if (!updatedTask) {
+      return res.status(404).json({ error: "Task not found" });
+    }
 
     return res.status(200).json(updatedTask);
 
   } catch (error) {
     console.error("Submit Task Error:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-}
-
-    if(!updatedTask){
-      return res.status(404).json({error:"task not found"})
-    }
-
-    return res.status(200).json({
-      message: "Task done!",
-      data: updatedTask
-    });
-
-  } catch (error) {
-    console.error(error);
-    next(error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
  async getTestOption(req,res,next){
