@@ -10,19 +10,19 @@ async submitTask(req, res, next) {
       return res.status(400).json({ error: "Task id required" });
     }
 
-    const updatedTask = await prisma.tasks.update({
-      where: { 
-        id: taskId 
-      },
-      data: {
-        completed: {
-          connect: { id: id } 
-        }
-      },
-      include: {
-        completed: true 
-      }
-    });
+  const updatedTask = await prisma.tasks.update({
+  where: { 
+    id: taskId 
+  },
+  data: {
+    completed: {
+      push: id // Bu yerda 'id' faqat bitta qiymat (masalan, foydalanuvchi ID-si)
+    }
+  },
+  include: {
+    completed: true 
+  }
+});
 
     if(!updatedTask){
       return res.status(404).json({error:"task not found"})
