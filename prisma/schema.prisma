@@ -23,7 +23,7 @@ model Student {
   rating            Int               @default(0)
   level             Difficulty        @default(easy)
   notes             Notes[]
-  tasks             Tasks?            @relation(fields: [tasksId], references: [id])
+
   tasksId           String?
 }
 
