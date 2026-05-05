@@ -145,7 +145,7 @@ model Tasks {
   level       Difficulty
   desc        String     @db.VarChar(255)
   learn       Learn[]
-  completed   []
+  completed    String[]   @default([])
   correctCode String
   test        Test[]
   createdAt   DateTime   @default(now())
