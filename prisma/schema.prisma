@@ -74,8 +74,8 @@ model Course {
 
 model Homework {
   id                String           @id @default(nanoid())
-  student           Student?         @relation(fields: [studentId], references: [id])
-  studentId         String?
+  group             Group?         @relation(fields: [groupId], references: [id])
+  groupId           String?
   title             String
   description       String
   checked           Boolean          @default(false)
@@ -83,9 +83,26 @@ model Homework {
   deadline          DateTime
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
-  studentActivity   StudentActivity? @relation(fields: [studentActivityId], references: [id])
-  studentActivityId String?
+
 }
+
+model CompletedHomework {
+id            String @id @default(nanoid())
+whichHom      Homework? @relation(fields:[homeworkId], references:[id])
+homeworkId    String? 
+student       Student? @relation(fields:[studentId], references:[id])
+studentId     String?
+complted      Boolean
+desc          String
+imageUrl      String 
+fileUrl       String 
+usedTime      String?
+createdAt     DateTime         @default(now())
+updatedAt     DateTime         @updatedAt
+
+
+}
+
 
 model StudentActivity {
   id        String     @id @default(nanoid())
