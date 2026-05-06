@@ -1,6 +1,42 @@
 import BaseError from "../errors/base.error.js";
 import { prisma } from "../lib/prisma.js";
 class Manager {
+
+async getMySubmissions(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const submissions = await prisma.completedHomework.findMany({
+      where: {
+        studentId: id
+      },
+      include: {
+        homework: {
+          select: {
+            title: true,
+            description: true,
+            point: true,
+            deadline: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc' 
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: submissions
+    });
+
+  } catch (err) {
+    console.error("Get submissions error:", err);
+    next(err);
+  }
+}
+  
+  
 async submitHomework(req, res, next) {
   try {
     const { id } = req.student; 
