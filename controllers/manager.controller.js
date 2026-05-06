@@ -2,6 +2,50 @@ import BaseError from "../errors/base.error.js";
 import { prisma } from "../lib/prisma.js";
 class Manager {
 
+
+  async approveSubmission(req, res, next) {
+  try {
+    const { homeworkId, studentId, submissionId } = req.body;
+
+    const homework = await prisma.homework.findUnique({
+      where: { id: homeworkId },
+      select: { point: true }
+    });
+
+    if (!homework) {
+      return res.status(404).json({ error: "Vazifa topilmadi!" });
+    }
+
+    const result = await prisma.$transaction([
+      prisma.student.update({
+        where: { id: studentId },
+        data: {
+          rating: {
+            increment: homework.point 
+          }
+        }
+      }),
+
+      prisma.completedHomework.update({
+        where: { id: submissionId },
+        data: {
+          complted: true // Sizning sxemangizda 'complted' deb yozilgan
+        }
+      })
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Vazifa tasdiqlandi, ball talabaga qo'shildi!",
+      data: result[1] // Yangilangan submission ma'lumoti
+    });
+
+  } catch (err) {
+    console.error("Approve error:", err);
+    next(err);
+  }
+}
+  
 async getMySubmissions(req, res, next) {
   try {
     const { id } = req.params;
