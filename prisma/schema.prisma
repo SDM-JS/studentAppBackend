@@ -97,6 +97,7 @@ complted      Boolean
 desc          String
 imageUrl      String 
 fileUrl       String 
+codeArea      String
 usedTime      String?
 createdAt     DateTime         @default(now())
 updatedAt     DateTime         @updatedAt
