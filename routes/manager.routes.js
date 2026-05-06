@@ -8,6 +8,13 @@ managerRoutes.post("/api/news", authMiddleware, managerController.createNews);
 
 managerRoutes.get("/api/me", authMiddleware, managerController.getInfo);
 
+managerRoutes.post(
+  "/api/homeworks/submit/:homeworkId",
+  authMiddleware,
+  managerController.submitHomework,
+);
+
+
 managerRoutes.get(
   "/api/get-all-news",
   authMiddleware,
