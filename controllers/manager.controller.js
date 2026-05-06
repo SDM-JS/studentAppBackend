@@ -11,7 +11,7 @@ async getMySubmissions(req, res, next) {
         studentId: id
       },
       include: {
-        homework: {
+        whichHom: {
           select: {
             title: true,
             description: true,
