@@ -562,7 +562,7 @@ async submitTask(req, res, next) {
         description: req.body.description,
         deadline: req.body.deadline,
         
-        groupId: req.body.studentId,
+        groupId: req.body.groupId,
       };
       if (
         Object.values(fields).some(
