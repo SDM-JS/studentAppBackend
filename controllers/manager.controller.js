@@ -393,11 +393,9 @@ async submitTask(req, res, next) {
   async updateStudent(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "org::admin") {
-        res.status(403).json({ error: "Forbidden" });
-        throw BaseError.Forbidden();
-      }
+   
       const { studentId } = req.params;
+      const {profileUrl} =req.body
       if (!studentId) {
         res.status(400).json({ error: "Student Id is required!" });
         throw BaseError.BadRequest("Student Id is required!");
@@ -407,7 +405,8 @@ async submitTask(req, res, next) {
           id: studentId,
         },
         data: {
-          ...req.body,
+          profileUrl,
+          ...req.body
         },
       });
       return res
