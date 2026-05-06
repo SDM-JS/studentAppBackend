@@ -579,7 +579,10 @@ async submitTask(req, res, next) {
           description: fields.description,
           checked: req.body.checked !== undefined ? req.body.checked : false,
           point: req.body.point ? parseInt(req.body.point) : null,
+          imageUrl : req.body.imageUrl,
+          
           deadline: new Date(fields.deadline),
+          
         },
       });
       return res
