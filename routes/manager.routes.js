@@ -14,7 +14,11 @@ managerRoutes.post(
   managerController.submitHomework,
 );
 
-
+managerRoutes.get(
+  "/api/homeworks/submit/:id",
+  authMiddleware,
+  managerController.getMySubmissions,
+);
 managerRoutes.get(
   "/api/get-all-news",
   authMiddleware,
