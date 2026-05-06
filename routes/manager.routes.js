@@ -13,6 +13,12 @@ managerRoutes.post(
   authMiddleware,
   managerController.submitHomework,
 );
+managerRoutes.post(
+  "/api/homeworks/approve",
+  authMiddleware,
+  managerController.approveSubmission,
+);
+
 
 managerRoutes.get(
   "/api/homeworks/submit/:id",
