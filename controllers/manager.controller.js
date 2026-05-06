@@ -603,10 +603,6 @@ async submitTask(req, res, next) {
       const whereClause = studentId ? { studentId } : {};
       const homeworks = await prisma.homework.findMany({
         where: whereClause,
-        include: {
-          student: true,
-          studentActivity: true,
-        },
         orderBy: { createdAt: "desc" },
       });
       return res.status(200).json({ homeworks });
