@@ -574,7 +574,7 @@ async submitTask(req, res, next) {
 
       const homework = await prisma.homework.create({
         data: {
-          studentId: fields.studentId,
+          groupId: fields.groupId,
           title: fields.title,
           description: fields.description,
           checked: req.body.checked !== undefined ? req.body.checked : false,
