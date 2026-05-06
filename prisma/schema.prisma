@@ -20,7 +20,7 @@ model Student {
   username          String?
   parentNumber      String
   group             Group?              @relation(fields: [groupId], references: [id])
-  profileUrl        String 
+  profileUrl        String             @default("")
   groupId           String?
   studentActivities StudentActivity[]
   createdAt         DateTime            @default(now())
