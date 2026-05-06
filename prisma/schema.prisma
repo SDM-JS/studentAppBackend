@@ -98,8 +98,8 @@ model Homework {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Teskari bog'liqliklar (Tuzatildi)
   students          Student[]
+  completed         String[]  @default([])
   completedBy       CompletedHomework[]
   studentActivities StudentActivity[]
 }
