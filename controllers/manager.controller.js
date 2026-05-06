@@ -1,6 +1,67 @@
 import BaseError from "../errors/base.error.js";
 import { prisma } from "../lib/prisma.js";
 class Manager {
+async submitHomework(req, res, next) {
+  try {
+    const { id } = req.student; 
+    const { homeworkId } = req.params;     
+    
+    const { 
+      desc, 
+      codeArea, 
+      imageUrl, 
+      fileUrl, 
+      usedTime 
+    } = req.body;
+
+    const homework = await prisma.homework.findUnique({
+      where: { id: homeworkId }
+    });
+
+    if (!homework) {
+      return res.status(404).json({ error: "Vazifa topilmadi!" });
+    }
+
+    if (homework.completed.includes(id)) {
+      return res.status(400).json({ error: "Siz bu vazifani topshirib bo'lgansiz!" });
+    }
+
+    const result = await prisma.$transaction([
+      prisma.completedHomework.create({
+        data: {
+          homeworkId: homeworkId,
+          studentId: id,
+          complted: false,
+          desc: desc || "",         
+          codeArea: codeArea || "", 
+          imageUrl: imageUrl || "", 
+          fileUrl: fileUrl || "",
+          usedTime: usedTime || "0",
+        }
+      }),
+
+      prisma.homework.update({
+        where: { id: homeworkId },
+        data: {
+          completed: {
+            push: id
+          }
+        }
+      })
+    ]);
+
+    return res.status(201).json({ 
+      success: true, 
+      message: "Vazifa muvaffaqiyatli topshirildi!", 
+      data: result[0] 
+    });
+
+  } catch (err) {
+    console.error("Submission error:", err);
+    next(err);
+  }
+}
+  
 async submitTask(req, res, next) {
   try {
     const { taskId } = req.params;
