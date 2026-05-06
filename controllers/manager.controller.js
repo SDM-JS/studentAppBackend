@@ -354,10 +354,7 @@ async submitTask(req, res, next) {
   async getAllStudents(req, res, next) {
     try {
       const { role } = req.student;
-      if (role !== "org::admin") {
-        res.status(403).json({ error: "Forbidden" });
-        throw BaseError.Forbidden();
-      }
+     
       const students = await prisma.student.findMany({
         orderBy: {
           createdAt: "desc",
