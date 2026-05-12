@@ -74,7 +74,7 @@ class AuthController {
       return res.status(200).json({
         success: true,
         message: "Login successful",
-        user: { id: student.id, email: student.email },
+        user: student,
         token,
       });
     } catch (error) {
