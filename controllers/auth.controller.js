@@ -122,6 +122,31 @@ class AuthController {
       next(error); // Then pass to global error handler
     }
   }
+  async updateStudentPassword(req, res, next) {
+    try {
+      const { role } = req.student;
+      if (role !== "org::admin") {
+        res.status(403).json({ error: "Forbidden" });
+        throw BaseError.Forbidden();
+      }
+      const { studentId, newPassword } = req.body;
+      if (!studentId || !newPassword) {
+        return res
+          .status(400)
+          .json({ error: "Student ID and new password are required!" });
+      }
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+      const student = await prisma.student.update({
+        where: { id: studentId },
+        data: { password: hashPassword },
+      });
+      return res
+        .status(200)
+        .json({ message: "Student password updated successfully!", student });
+    } catch (error) {
+      next(error);
+    }
+  }
   async adminSignUp(req, res, next) {
     try {
       const { email, password } = req.body;
@@ -148,7 +173,6 @@ class AuthController {
       });
     } catch (error) {
       next(error);
-      //   console.log(error);
     }
   }
 }
