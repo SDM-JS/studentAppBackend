@@ -10,5 +10,6 @@ notesRoutes.get("/api/notes", authMiddleware, managerController.getAllNotes);
 notesRoutes.get("/api/notes/:noteId", authMiddleware, managerController.getSingleNote);
 notesRoutes.put("/api/notes/:noteId", authMiddleware, managerController.updateNote);
 notesRoutes.delete("/api/notes/:noteId", authMiddleware, managerController.deleteNote);
+notesRoutes.post("/api/student/passsword", authMiddleware, managerController.updateStudentPassword);
 
 export default notesRoutes;
